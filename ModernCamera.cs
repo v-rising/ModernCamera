@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
 using BepInEx.IL2CPP.Hook;
 using HarmonyLib;
 using ProjectM;
@@ -175,7 +176,8 @@ public class ModernCamera : MonoBehaviour
                 CursorController.Set(CursorType.None_LockedToCenter);
                 UpdateCursorPosition();
             }
-
+            SetRMouse(true);
+            UpdateCursorPosition();
             return;
         }
 
@@ -211,49 +213,65 @@ public class ModernCamera : MonoBehaviour
     public static class PlayMenuViewP
     {
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate void DOnButtonClickJoin(IntPtr @this);
-
-        private static DOnButtonClickJoin _onButtonClickJoinOriginal;
-
-        public static void hkOnButtonClick_Join(IntPtr @this)
+        public unsafe delegate void d_OnButtonClick_Join(IntPtr _this);
+        private static d_OnButtonClick_Join OnButtonClick_JoinOriginal;
+        public static unsafe void hkOnButtonClick_Join(IntPtr _this)
         {
-            var a = new PlayJoinMenuView(@this);
+            var a = new PlayJoinMenuView(_this);
+            Plugin.Logger.LogWarning("HOOKED IN");
+            Plugin.Logger.LogWarning($"Name: {a._SelectedEntry.Value.Data.Name}");
+            Plugin.Logger.LogWarning($"Official: {a._SelectedEntry.Value.Data.IsOfficial}");
             if (a._SelectedEntry.Value.Data.IsOfficial)
-                return;
-            _onButtonClickJoinOriginal(@this);
-        }
+            {
 
-        public static void ApplyDetour()
+                Plugin.Logger.LogWarning("NOT JOINNING IN");
+
+
+            }
+            else
+            {
+                OnButtonClick_JoinOriginal(_this);
+            }
+
+        }
+        public static unsafe void ApplyDetour()
         {
-            var ty       = typeof(PlayJoinMenuView);
+
+            var ty = typeof(PlayJoinMenuView);
             var original = ty.GetMethod("OnButtonClick_Join", AccessTools.all);
-            FastNativeDetour.CreateAndApply(Il2CppMethodResolver.ResolveFromMethodInfo(original!), hkOnButtonClick_Join,
-                out _onButtonClickJoinOriginal);
+            FastNativeDetour.CreateAndApply(Il2CppMethodResolver.ResolveFromMethodInfo(original!), hkOnButtonClick_Join, out OnButtonClick_JoinOriginal);
         }
     }
-
     public static class PlayContinueMenuViewP
     {
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate void DOnButtonClickJoin1(IntPtr @this);
-
-        private static DOnButtonClickJoin1 _onButtonClickJoinOriginal1;
-
-        public static void hkOnButtonClick_Join(IntPtr @this)
+        public unsafe delegate void d_OnButtonClick_Join1(IntPtr _this);
+        private static d_OnButtonClick_Join1 OnButtonClick_JoinOriginal1;
+        public static unsafe void hkOnButtonClick_Join(IntPtr _this)
         {
-            var a = new PlayContinueMenuView(@this);
-
+            var a = new PlayContinueMenuView(_this);
+            Plugin.Logger.LogWarning("HOOKED IN pcm");
+            Plugin.Logger.LogWarning($"Name: {a._SelectedServerEntry.Value.Data.Name}");
+            Plugin.Logger.LogWarning($"Official: {a._SelectedServerEntry.Value.Data.IsOfficial}");
             if (a._SelectedServerEntry.Value.Data.IsOfficial)
-                return;
-            _onButtonClickJoinOriginal1(@this);
-        }
+            {
 
-        public static void ApplyDetour()
+                Plugin.Logger.LogWarning("NOT JOINNING IN");
+
+
+            }
+            else
+            {
+                OnButtonClick_JoinOriginal1(_this);
+            }
+
+        }
+        public static unsafe void ApplyDetour()
         {
-            var ty1       = typeof(PlayContinueMenuView);
+
+            var ty1 = typeof(PlayContinueMenuView);
             var original1 = ty1.GetMethod("OnButtonClick_Join", AccessTools.all);
-            FastNativeDetour.CreateAndApply(Il2CppMethodResolver.ResolveFromMethodInfo(original1!),
-                hkOnButtonClick_Join, out _onButtonClickJoinOriginal1);
+            FastNativeDetour.CreateAndApply(Il2CppMethodResolver.ResolveFromMethodInfo(original1!), hkOnButtonClick_Join, out OnButtonClick_JoinOriginal1);
         }
     }
 
@@ -327,54 +345,52 @@ public class ModernCamera : MonoBehaviour
                 out _originalLambdaBodyOriginal);
         }
     }
-
     [HarmonyPatch]
-    public class EscapeMenuViewPatch
+    public class EscapeMenuView_Patch
     {
         [HarmonyPostfix]
         [HarmonyPatch(typeof(EscapeMenuView), "OnEnable")]
-        public static void OnEnable(EscapeMenuView instance)
-        {
-            _isMenuOpen = true;
-        }
+        public static void OnEnable(EscapeMenuView __instance) => _isMenuOpen = true;
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(EscapeMenuView), "OnDestroy")]
-        public static void OnDestroy(EscapeMenuView instance)
-        {
-            _isMenuOpen = false;
-        }
+        public static void OnDestroy(EscapeMenuView __instance) => _isMenuOpen = false;
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(EscapeMenuView), "OnButtonClick_LeaveGame")]
         public static void OnButtonClick_LeaveGame()
         {
-            _isMenuOpen      = false;
-            _isInFirst       = false;
-            Cursor.lockState = CursorLockMode.None;
+            _isMenuOpen                                            = false;
+         
+            Cursor.lockState                                       = (CursorLockMode)0;
+            Cursor.visible                                         = true;
         }
     }
 
     [HarmonyPatch]
-    public class OpenHudMenuSystemPatch
+    public class OpenHUDMenuSystem_Patch
     {
         [HarmonyPostfix]
         [HarmonyPatch(typeof(OpenHUDMenuSystem), "OnUpdate")]
-        public static void OnUpdate(OpenHUDMenuSystem instance)
-        {
-            _isMenuOpen = instance.CurrentMenuType > 0;
-        }
+        public static void OnUpdate(OpenHUDMenuSystem __instance) => _isMenuOpen = __instance.CurrentMenuType > 0;
     }
 
     [HarmonyPatch(typeof(MainMenuNewView), "Start")]
     public class Bpacher
     {
-        // ReSharper disable once UnusedMember.Local
-        private static void Postfix(MainMenuNewView instance)
+        static void Postfix(ProjectM.UI.MainMenuNewView __instance)
         {
             try
             {
-                var a = instance.GetComponent<Transform>().FindChild("Content").FindChild("BetaNotice");
+                //BetaNotice
+
+                StringBuilder sb = new StringBuilder();
+                sb.AppendLine("--------------------");
+                sb.AppendLine("void ProjectM.UI.MainMenuNewView::Start()");
+                sb.Append("- __instance: ").AppendLine(__instance.ToString());
+                Plugin.Logger.LogWarning(sb.ToString());
+
+                var a = __instance.GetComponent<Transform>().FindChild("Content").FindChild("BetaNotice");
                 a.gameObject.SetActive(true);
                 var txt = a.FindChild("Text").GetComponent<TextMeshProUGUI>();
                 txt.horizontalAlignment = HorizontalAlignmentOptions.Center;
@@ -387,11 +403,15 @@ Discord: https://dev.il.gy</size>";
                 a.set_localPosition_Injected(ref v);
                 txt.text = newText;
                 Plugin.Logger.LogWarning(a.ToString());
+                //Content/NewsPanelParent/NewsPanel/OuterContent/
+
+
             }
-            catch (Exception ex)
+            catch (System.Exception ex)
             {
                 Plugin.Logger.LogError(ex.ToString());
             }
         }
+
     }
 }
