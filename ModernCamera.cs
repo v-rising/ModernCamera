@@ -5,6 +5,7 @@ using System.Text;
 using BepInEx.IL2CPP.Hook;
 using HarmonyLib;
 using ProjectM;
+using ProjectM.Terrain;
 using ProjectM.UI;
 using TMPro;
 using UnityEngine;
@@ -128,20 +129,32 @@ public class ModernCamera : MonoBehaviour
     // ReSharper disable once UnusedMember.Global
     public void Update()
     {
+      
         if (!_hasInit) return;
-
+       
         if (_isInFirst)
         {
-            if (_isMenuOpen)
+            // Plugin.Logger.LogError($"{_mouseIsDown}");
+            if (Input.GetMouseButtonUp(1))
             {
-                _isLocked = false;
-                CursorController.Set(CursorType.Menu_Normal);
-                SetRMouse(false);
+                Plugin.Logger.LogError($"-----------------MOUSE UP FROM EXTERNAL----------------");
+                _mouseIsDown = false;
+                _isLocked    = false;
                 return;
-            }
 
+            }
+            if (Input.GetMouseButtonDown(1))
+            {
+                 Plugin.Logger.LogError($"-----------------MOUSE DOWN FROM EXTERNAL----------------");
+                _mouseIsDown = true;
+                _isLocked    = true;
+                return;
+
+            }
+            
             if (Input.GetKeyDown(KeyCode.Escape) && Event.current.type == EventType.keyDown)
             {
+                Plugin.Logger.LogError("Setting inmenu");
                 _isMenuOpen = true;
                 _isInPopup  = false;
                 _isLocked   = false;
@@ -153,6 +166,7 @@ public class ModernCamera : MonoBehaviour
                  Input.GetKeyDown(KeyCode.Escape)) && Event.current.type == EventType.keyDown)
             {
                 CursorController.Set(CursorType.Game_Normal);
+                Plugin.Logger.LogError("Setting inpopup");
                 _isLocked  = false;
                 _isInPopup = true;
                 SetRMouse(false);
@@ -167,17 +181,48 @@ public class ModernCamera : MonoBehaviour
                 return;
 
             }
-
+            if (_isMenuOpen)
+            {
+                if (_isLocked)
+                {
+                    Plugin.Logger.LogError("Setting unlock");
+                    _isLocked = false;
+                    CursorController.Set(CursorType.Menu_Normal);
+                    SetRMouse(false);
+                    return;
+                }
+                else
+                {
+                    return;
+                }
+            }
+            if (_isInPopup)
+            {
+                if (_isLocked)
+                {
+                    Plugin.Logger.LogError("Setting unlock");
+                    _isLocked = false;
+                    CursorController.Set(CursorType.Game_Normal);
+                    SetRMouse(false);
+                    return;
+                }
+                else
+                {
+                    return;
+                }
+            }
             if (!_isLocked)
             {
-
+                Plugin.Logger.LogError("Setting lock");
                 UpdateCursorPosition();
                 SetRMouse(true);
                 CursorController.Set(CursorType.None_LockedToCenter);
                 UpdateCursorPosition();
+                _isLocked   = true;
+                _isMenuOpen = false;
+                _isInPopup  = false;
             }
-            SetRMouse(true);
-            UpdateCursorPosition();
+           
             return;
         }
 
