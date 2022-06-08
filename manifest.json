@@ -1,0 +1,9 @@
+{
+  "name": "ModernCamera",
+  "version_number": "1.0.1",
+  "website_url": "http://dev.il.gy",
+  "description": "Makes the camera more like a mmo camera and removes the limits.",
+  "dependencies": [
+    "BepInEx-BepInExPack_V_Rising-1.0.0"
+  ]
+}

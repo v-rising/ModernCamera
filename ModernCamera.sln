@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.32002.261
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModernCamera", "ModernCamera\ModernCamera.csproj", "{7253F4CB-D6C9-4FE5-8D1B-039A45E3432F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7253F4CB-D6C9-4FE5-8D1B-039A45E3432F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7253F4CB-D6C9-4FE5-8D1B-039A45E3432F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7253F4CB-D6C9-4FE5-8D1B-039A45E3432F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7253F4CB-D6C9-4FE5-8D1B-039A45E3432F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {70D9E8CC-51B2-4CBE-A472-F5880A2596D8}
+	EndGlobalSection
+EndGlobal
