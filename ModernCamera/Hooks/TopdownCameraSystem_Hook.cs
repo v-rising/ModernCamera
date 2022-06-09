@@ -63,22 +63,22 @@ internal static class TopdownCameraSystem_Hook
                 ModernCameraState.isInitialized = true;
                 ModernCameraState.isMenuOpen = false;
             }
-
+            cameraData->LerpLambdas.ZoomLambda = OrigZoomLambda;
             if (!ModernCameraState.isFirstPerson)
             {
                 ModernCameraState.isFirstPerson = true;
                
-                cameraState->Current.Pitch = 0.0f;
+                cameraState->Current.Pitch = 0.2f;
                 cameraState->Current.Zoom = -1.1f;
             }
             else
             {
-                
-                cameraData->LerpLambdas.ZoomLambda = OrigZoomLambda;
+                cameraState->ZoomSettings.MinPitch = -1.5f;
+                cameraState->Current.NormalizedLookAtOffset.y = flag ? Mathf.Lerp(1f, 0.0f, num) : 0.0f;
             }
-            cameraState->ZoomSettings.MinPitch = -1.5f;
+         
             cameraState->ZoomSettings.MinZoom = -1.1f;
-            cameraState->Current.NormalizedLookAtOffset.y = flag ? Mathf.Lerp(1f, 0.0f, num) : 0.0f;
+           
         }
         else
         {
@@ -97,7 +97,11 @@ internal static class TopdownCameraSystem_Hook
         }
         if (cameraState->InBuildMode)
         {
+            cameraState->ZoomSettings.MinZoom = 1.0f;
+           ModernCameraState.isFirstPerson = false;
             Plugin.Logger.LogError("In build");
+            //mess with zoom distance???
+            //first trigger of build mode is stuck meh!
             
 
         }
