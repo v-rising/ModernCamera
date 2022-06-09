@@ -40,8 +40,3 @@ special thanks to Kunogi `@牧瀬紅莉栖#1570` for the help with the camera zo
 - Initial mod upload
 
 </details>
-
-### Changelog
-`1.2.0` Added first person support, <add more notes here>
-`1.0.1` fixed zoom, now you can go completely into 1st person also.
-`1.0.0` Initial mod upload
