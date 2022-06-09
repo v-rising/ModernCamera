@@ -3,6 +3,10 @@ using ModernCamera.Enums;
 using ModernCamera.Utils;
 using ProjectM;
 using UnityEngine;
+using UnhollowerRuntimeLib;
+using Unity.Entities;
+using static ModernCamera.ModernCameraState;
+using System;
 
 namespace ModernCamera;
 
@@ -46,48 +50,102 @@ public class ModernCamera : MonoBehaviour
 
     public void Awake()
     {
-        return;
+      
         ModernCameraState.isMenuOpen = true;
         Cursor.visible = true;
 
         ModernCameraState.gamehandle = Window.GetWindow("VRising");
     }
 
+    public void createCrosshair()
+    {
+        var txt = Texture2D.blackTexture;
+        foreach (var i in Resources.FindObjectsOfTypeAll(UnhollowerRuntimeLib.Il2CppType.Of<Texture2D>()))
+        {
+            if (i.name == "Cursor_Crosshair")
+            {
+                txt = i.TryCast<Texture2D>();
+            }
+        }
+
+
+        var HC         = GameObject.Find("HUDCanvas(Clone)/Canvas");
+        ModernCameraState.cross_hair                  = new GameObject("Crosshair");
+        ModernCameraState.cross_hair.transform.parent = HC.transform;
+        ModernCameraState.cross_hair.transform.SetSiblingIndex(1);
+        ModernCameraState.cross_hair.AddComponent<CanvasRenderer>();
+        var cross_hairRectTransform = ModernCameraState.cross_hair.AddComponent<RectTransform>();
+        cross_hairRectTransform.pivot         = new Vector2(0,  0);
+        cross_hairRectTransform.anchorMin     = new Vector2(0,  0);
+        cross_hairRectTransform.anchorMax     = new Vector2(0,  0);
+        cross_hairRectTransform.sizeDelta     = new Vector2(32, 32);
+        cross_hairRectTransform.localScale    = new Vector3(1, 1, 1);
+        cross_hairRectTransform.localPosition = new Vector3(0, 0, 0);
+        var c = ModernCameraState.cross_hair.AddComponent<UnityEngine.UI.Image>();
+        c.overrideSprite = Sprite.Create(txt, new Rect(0, 0, 32, 32), new Vector2(0, 0), 32);
+        Plugin.Logger.LogError("cURSORcREATED!!");
+        isCrosshairShown = true;
+    }
+
     public void Update()
     {
-        return;
-        if (!ModernCameraState.isInitialized) return;
+        if (!isInitialized) return;
 
-        if (ModernCameraState.isFirstPerson)
+        if (!hasWorld)
         {
-            if (Input.GetMouseButtonUp(1))
+            foreach (var a in World.All)
             {
-                ModernCameraState.isMouseDown = false;
-                ModernCameraState.isMouseLocked = false;
+                if (a.Name == "Client_0")
+                {
+                    hasWorld = true;
+                    clientWorld = a;
+                    continue;
+
+                }
+            }
+            if (!hasWorld)
+            {
+                throw new Exception("cant get world");
+            }
+            return;
+        }
+
+        if (cross_hair == null)
+        {
+            createCrosshair();
+        }
+        if (isFirstPerson)
+        {
+            if (!isCrosshairShown)
+            {
+                cross_hair.active = true;
+            }
+            // Plugin.Logger.LogError($"{isMouseDown}");
+            if (Input.GetMouseButtonUp(1) && isMouseDownExternal)
+            {
+                Plugin.Logger.LogError($"-----------------MOUSE UP FROM EXTERNAL----------------");
+                isMouseDown = false;
+                isMouseDownExternal = false;
+                isMouseLocked = false;
                 return;
 
             }
-            if (Input.GetMouseButtonDown(1))
+            if (Input.GetMouseButtonDown(1) && !isMouseDownExternal)
             {
-                ModernCameraState.isMouseDown = true;
-                ModernCameraState.isMouseLocked = true;
+                Plugin.Logger.LogError($"-----------------MOUSE DOWN FROM EXTERNAL----------------");
+                isMouseDown = true;
+                isMouseDownExternal = true;
+                isMouseLocked = true;
                 return;
 
-            }
-
-            if (ModernCameraState.isMenuOpen)
-            {
-                ModernCameraState.isMouseLocked = false;
-                CursorController.Set(CursorType.Menu_Normal);
-                SetRMouse(false);
-                return;
             }
 
             if (Input.GetKeyDown(KeyCode.Escape) && Event.current.type == EventType.keyDown)
             {
-                ModernCameraState.isMenuOpen = true;
-                ModernCameraState.isPopupOpen = false;
-                ModernCameraState.isMouseLocked = false;
+                Plugin.Logger.LogError("Setting inmenu");
+                isMenuOpen = true;
+                isPopupOpen = false;
+                isMouseLocked = false;
                 SetRMouse(false);
                 return;
             }
@@ -96,8 +154,9 @@ public class ModernCamera : MonoBehaviour
                  Input.GetKeyDown(KeyCode.Escape)) && Event.current.type == EventType.keyDown)
             {
                 CursorController.Set(CursorType.Game_Normal);
-                ModernCameraState.isMouseLocked = false;
-                ModernCameraState.isPopupOpen = true;
+                Plugin.Logger.LogError("Setting inpopup");
+                isMouseLocked = false;
+                isPopupOpen = true;
                 SetRMouse(false);
                 return;
             }
@@ -105,65 +164,93 @@ public class ModernCamera : MonoBehaviour
             if ((Input.GetKeyUp(KeyCode.LeftControl) || Input.GetKeyUp(KeyCode.LeftAlt)) &&
                 Event.current.type == EventType.keyUp)
             {
-                if (ModernCameraState.isPopupOpen) ModernCameraState.isPopupOpen = false;
-                if (!ModernCameraState.isMouseDown) SetRMouse(true);
+                Plugin.Logger.LogError("Setting NOT inpopup");
+                if (isPopupOpen) isPopupOpen = false;
+                if (!isMouseDown) SetRMouse(true);
                 return;
-            }
 
-            if (ModernCameraState.isMenuOpen)
+            }
+            if (isMenuOpen)
             {
-                if (ModernCameraState.isMouseLocked)
+                if (isCrosshairShown)
+                {
+                    cross_hair.active = false;
+                }
+                if (isMouseLocked)
                 {
                     Plugin.Logger.LogError("Setting unlock");
-                    ModernCameraState.isMouseLocked = false;
+                    isMouseLocked = false;
                     CursorController.Set(CursorType.Menu_Normal);
                     SetRMouse(false);
                     return;
                 }
-
-                return;
+                else
+                {
+                    return;
+                }
             }
-
-            if (ModernCameraState.isPopupOpen)
+            if (isPopupOpen)
             {
-                if (ModernCameraState.isMouseLocked)
+                if (isCrosshairShown)
+                {
+                    cross_hair.active = false;
+                }
+                if (isMouseLocked)
                 {
                     Plugin.Logger.LogError("Setting unlock");
-                    ModernCameraState.isMouseLocked = false;
+                    isMouseLocked = false;
                     CursorController.Set(CursorType.Game_Normal);
                     SetRMouse(false);
                     return;
                 }
-
-                return;
+                else
+                {
+                    return;
+                }
             }
-
-            if (!ModernCameraState.isMouseLocked)
+            if (!isMouseLocked)
             {
+                Plugin.Logger.LogError("Setting lock");
+                UpdateCursorPosition();
                 SetRMouse(true);
                 CursorController.Set(CursorType.None_LockedToCenter);
                 UpdateCursorPosition();
-                ModernCameraState.isMouseLocked = true;
-                ModernCameraState.isMenuOpen = false;
-                ModernCameraState.isPopupOpen = false;
+                isMouseLocked = true;
+                isMenuOpen = false;
+                isPopupOpen = false;
+                if (!isCrosshairShown)
+                {
+                    cross_hair.active = true;
+                }
             }
 
             return;
         }
-
-        if (ModernCameraState.isMouseDown) SetRMouse(false);
-
-        if (ModernCameraState.isMenuOpen)
+        if (isCrosshairShown)
         {
-            ModernCameraState.isMouseLocked = false;
-            CursorController.Set(CursorType.Menu_Normal);
-
+            cross_hair.active = false;
+        }
+        if (isMouseLocked)
+        {
+            isMouseLocked = false;
+            CursorController.Set(CursorType.Game_Normal);
             SetRMouse(false);
+        }
+
+
+        if (isMouseDown) SetRMouse(false);
+
+        if (isMenuOpen)
+        {
+            isMouseLocked = false;
+            CursorController.Set(CursorType.Menu_Normal);
+            SetRMouse(false);
+
             return;
         }
 
-        ModernCameraState.isMouseLocked = false;
-        CursorController.Set(CursorType.Game_Normal);
-        SetRMouse(false);
+
+        // SetRMouse(false);
     }
+
 }
