@@ -31,6 +31,7 @@ internal static class TopdownCameraSystem_Hook
 
     private static unsafe void UpdateCameraInputsHook(IntPtr _this, TopdownCameraState* cameraState, TopdownCamera* cameraData)
     {
+        float OrigZoomLambda = 12f;
         cameraState->ZoomSettings.MaxPitch = 1.5f; // temporary for debugging
         cameraState->ZoomSettings.MinPitch = 0.0f;
         cameraState->ZoomSettings.MaxZoom = cameraState->ZoomSettings.MinZoom > 0.0 ? 14f : 30f;
@@ -45,10 +46,17 @@ internal static class TopdownCameraSystem_Hook
 
         var yx = Mathf.SmoothStep(lookat.y, lookat.y + lmod, (100 - pc) * 0.01f);
         var yz = Mathf.SmoothStep(1.24f, 1.80f, (100 - pc) * 0.01f);
-
-
+        var zoomlamsmo = Mathf.Lerp(12f, 5f, (100 - pc) * 0.01f);
+      //  Plugin.Logger.LogError($"{zoomlamsmo}");
+        if (cameraState->InstantJump)
+        {
+            Plugin.Logger.LogError("insta jump");
+           // UpdateCameraInputsOriginal!(_this, cameraState, cameraData);
+        }
+       
+       
         lookat.y = (float)Math.Round(yx, 2);
-        if (cameraState->Current.Zoom < 0.925f && !ModernCameraState.isFirstPerson)
+        if (cameraState->Current.Zoom < .8f)
         {
             if (!ModernCameraState.isInitialized)
             {
@@ -56,9 +64,20 @@ internal static class TopdownCameraSystem_Hook
                 ModernCameraState.isMenuOpen = false;
             }
 
-            ModernCameraState.isFirstPerson = true;
+            if (!ModernCameraState.isFirstPerson)
+            {
+                ModernCameraState.isFirstPerson = true;
+               
+                cameraState->Current.Pitch = 0.0f;
+                cameraState->Current.Zoom = -1.1f;
+            }
+            else
+            {
+                
+                cameraData->LerpLambdas.ZoomLambda = OrigZoomLambda;
+            }
             cameraState->ZoomSettings.MinPitch = -1.5f;
-            cameraState->Current.Zoom = -1.0f;
+            cameraState->ZoomSettings.MinZoom = -1.1f;
             cameraState->Current.NormalizedLookAtOffset.y = flag ? Mathf.Lerp(1f, 0.0f, num) : 0.0f;
         }
         else
@@ -70,14 +89,23 @@ internal static class TopdownCameraSystem_Hook
                 cameraState->Current.Zoom = 1.5f;
                 ModernCameraState.isFirstPerson = false;
             }
-
-            cameraData->LerpLambdas.ZoomLambda = (float)Math.Round(yx, 2);
+           // Plugin.Logger.LogError($"{cameraData->LerpLambdas.ZoomLambda}");
+           // 
             cameraState->Current.NormalizedLookAtOffset.y = 0.0f;
             cameraData->LookAtHeight = (float)Math.Round(yz, 2);
+            cameraData->LerpLambdas.ZoomLambda =zoomlamsmo;
         }
+        if (cameraState->InBuildMode)
+        {
+            Plugin.Logger.LogError("In build");
+            
 
+        }
+       
+        cameraData->BuildModeZoomSettings = cameraState->ZoomSettings;
         cameraData->StandardZoomSettings = cameraState->ZoomSettings;
-
+        
+        
         UpdateCameraInputsOriginal!(_this, cameraState, cameraData);
     }
 }
