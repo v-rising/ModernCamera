@@ -75,7 +75,7 @@ public class ModernCamera : MonoBehaviour
         ModernCameraState.cross_hair.transform.SetSiblingIndex(1);
         ModernCameraState.cross_hair.AddComponent<CanvasRenderer>();
         var cross_hairRectTransform = ModernCameraState.cross_hair.AddComponent<RectTransform>();
-        cross_hairRectTransform.pivot         = new Vector2(0,  0);
+        cross_hairRectTransform.pivot         = new Vector2(0.45f,  -2.9f);
         cross_hairRectTransform.anchorMin     = new Vector2(0,  0);
         cross_hairRectTransform.anchorMax     = new Vector2(0,  0);
         cross_hairRectTransform.sizeDelta     = new Vector2(32, 32);
@@ -87,6 +87,20 @@ public class ModernCamera : MonoBehaviour
         isCrosshairShown = true;
     }
 
+    public void showCrossHair(bool display =  true)
+    {
+        if (display)
+        {
+            cross_hair.active = true;
+            isCrosshairShown = true;
+
+        }
+        else
+        {
+            cross_hair.active = false;
+            isCrosshairShown = false;
+        }
+    }
     public void Update()
     {
         if (!isInitialized) return;
@@ -118,7 +132,7 @@ public class ModernCamera : MonoBehaviour
         {
             if (!isCrosshairShown)
             {
-                cross_hair.active = true;
+                showCrossHair();
             }
             // Plugin.Logger.LogError($"{isMouseDown}");
             if (Input.GetMouseButtonUp(1) && isMouseDownExternal)
@@ -174,7 +188,7 @@ public class ModernCamera : MonoBehaviour
             {
                 if (isCrosshairShown)
                 {
-                    cross_hair.active = false;
+                    showCrossHair(false);
                 }
                 if (isMouseLocked)
                 {
@@ -193,7 +207,7 @@ public class ModernCamera : MonoBehaviour
             {
                 if (isCrosshairShown)
                 {
-                    cross_hair.active = false;
+                    showCrossHair(false);
                 }
                 if (isMouseLocked)
                 {
@@ -220,7 +234,7 @@ public class ModernCamera : MonoBehaviour
                 isPopupOpen = false;
                 if (!isCrosshairShown)
                 {
-                    cross_hair.active = true;
+                    showCrossHair();
                 }
             }
 
@@ -228,7 +242,7 @@ public class ModernCamera : MonoBehaviour
         }
         if (isCrosshairShown)
         {
-            cross_hair.active = false;
+            showCrossHair(false);
         }
         if (isMouseLocked)
         {

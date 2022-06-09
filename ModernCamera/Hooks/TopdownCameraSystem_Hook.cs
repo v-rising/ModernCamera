@@ -31,9 +31,9 @@ internal static class TopdownCameraSystem_Hook
 
     private static unsafe void UpdateCameraInputsHook(IntPtr _this, TopdownCameraState* cameraState, TopdownCamera* cameraData)
     {
-        cameraState->ZoomSettings.MaxPitch = Settings.thirdPersonMaxPitch;
-        cameraState->ZoomSettings.MinPitch = Settings.thirdPersonMinPitch;
-        cameraState->ZoomSettings.MaxZoom = Settings.thirdPersonMaxZoom;
+        cameraState->ZoomSettings.MaxPitch = 1.5f; // temporary for debugging
+        cameraState->ZoomSettings.MinPitch = 0.0f;
+        cameraState->ZoomSettings.MaxZoom = cameraState->ZoomSettings.MinZoom > 0.0 ? 14f : 30f;
         cameraState->ZoomSettings.MinZoom = -1.0f;
 
         var flag = cameraState->Current.Zoom > 0.0;
@@ -46,8 +46,9 @@ internal static class TopdownCameraSystem_Hook
         var yx = Mathf.SmoothStep(lookat.y, lookat.y + lmod, (100 - pc) * 0.01f);
         var yz = Mathf.SmoothStep(1.24f, 1.80f, (100 - pc) * 0.01f);
 
+
         lookat.y = (float)Math.Round(yx, 2);
-        if (cameraState->Current.Zoom < 0.8f)
+        if (cameraState->Current.Zoom < 0.925f && !ModernCameraState.isFirstPerson)
         {
             if (!ModernCameraState.isInitialized)
             {
@@ -62,7 +63,15 @@ internal static class TopdownCameraSystem_Hook
         }
         else
         {
-            ModernCameraState.isFirstPerson = false;
+            
+            if (ModernCameraState.isFirstPerson)
+            {
+                cameraState->ZoomSettings.MinPitch = Settings.thirdPersonMinPitch;
+                cameraState->Current.Zoom = 1.5f;
+                ModernCameraState.isFirstPerson = false;
+            }
+
+            cameraData->LerpLambdas.ZoomLambda = (float)Math.Round(yx, 2);
             cameraState->Current.NormalizedLookAtOffset.y = 0.0f;
             cameraData->LookAtHeight = (float)Math.Round(yz, 2);
         }
