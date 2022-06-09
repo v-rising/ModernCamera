@@ -7,6 +7,7 @@ using UnhollowerRuntimeLib;
 
 namespace ModernCamera;
 
+[BepInProcess("VRising.exe")]
 [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
 public class Plugin : BasePlugin
 {
@@ -34,6 +35,8 @@ public class Plugin : BasePlugin
     public override bool Unload()
     {
         harmony.UnpatchSelf();
+
+        TopdownCameraSystem_Hook.Dispose();
 
         return true;
     }

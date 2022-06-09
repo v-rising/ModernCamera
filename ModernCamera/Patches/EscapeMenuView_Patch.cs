@@ -1,6 +1,5 @@
 ﻿using HarmonyLib;
 using ProjectM.UI;
-using UnityEngine;
 
 namespace ModernCamera.Patches;
 
@@ -20,8 +19,5 @@ internal class EscapeMenuView_Patch
     private static void OnButtonClick_LeaveGame()
     {
         ModernCameraState.isMenuOpen = false;
-
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
     }
 }

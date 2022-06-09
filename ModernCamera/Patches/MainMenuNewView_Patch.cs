@@ -27,7 +27,7 @@ internal class MainMenuNewView_Patch
         modNoticeRectTransform.pivot = new Vector2(.5f, 0);
         modNoticeRectTransform.anchorMin = new Vector2(.5f, 0);
         modNoticeRectTransform.anchorMax = new Vector2(.5f, 0);
-        modNoticeRectTransform.localScale = new Vector3(1, 1, 1);
+        modNoticeRectTransform.localScale = new Vector3(0.8f, 0.8f, 0.8f);
         modNoticeRectTransform.localPosition = new Vector3(0, 0, 0);
         var modNoticeImage = modNotice.AddComponent<Image>();
         modNoticeImage.sprite = null;

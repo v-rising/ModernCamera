@@ -1,6 +1,7 @@
 ﻿using ModernCamera.Enums;
 using ModernCamera.Structs;
 using System.Runtime.InteropServices;
+using UnityEngine;
 
 namespace ModernCamera.Utils;
 
@@ -22,14 +23,19 @@ internal static class Mouse
 
     internal static bool SetCursorPosition(int x, int y)
     {
-        return SetCursorPos(x, y);
+        var rect = Window.GetWindowRect();
+        return SetCursorPos(rect.Left + Screen.width / 2, rect.Top + Screen.height / 2);
     }
 
     internal static POINT GetCursorPosition()
     {
-        POINT point;
-        GetCursorPos(out point);
+        GetCursorPos(out var point);
         return point;
+    }
+
+    internal static void Click(MouseEvent mouseEvent)
+    {
+        Click(mouseEvent, GetCursorPosition());
     }
 
     internal static void Click(MouseEvent mouseEvent, POINT point)

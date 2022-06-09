@@ -16,55 +16,64 @@ internal static class TopdownCameraSystem_Hook
     private static UpdateCameraInputs? UpdateCameraInputsOriginal;
     private static FastNativeDetour? UpdateCameraInputsDetour;
 
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    private unsafe delegate void HandleInput(IntPtr _this, InputState* inputState);
+    private static HandleInput? HandleInputOriginal;
+    private static FastNativeDetour? HandleInputDetour;
+
     internal static unsafe void CreateAndApply()
     {
         if (UpdateCameraInputsDetour == null)
         {
             UpdateCameraInputsDetour = NativeDetour.Create(typeof(TopdownCameraSystem), "UpdateCameraInputs", "OriginalLambdaBody", UpdateCameraInputsHook, out UpdateCameraInputsOriginal);
         }
+
+        if (HandleInputDetour == null)
+        {
+            HandleInputDetour = NativeDetour.Create(typeof(TopdownCameraSystem), "HandleInput", HandleInputHook, out HandleInputOriginal);
+        }
     }
 
     internal static void Dispose()
     {
         UpdateCameraInputsDetour?.Dispose();
+        HandleInputDetour?.Dispose();
+    }
+
+    private static unsafe void HandleInputHook(IntPtr _this, InputState* inputState)
+    {
+        ModernCameraState.currentCameraBehaviour!.HandleInput(ref *inputState);
+
+        HandleInputOriginal!(_this, inputState);
     }
 
     private static unsafe void UpdateCameraInputsHook(IntPtr _this, TopdownCameraState* cameraState, TopdownCamera* cameraData)
     {
-        cameraState->ZoomSettings.MaxPitch = Settings.thirdPersonMaxPitch;
-        cameraState->ZoomSettings.MinPitch = Settings.thirdPersonMinPitch;
-        cameraState->ZoomSettings.MaxZoom = Settings.thirdPersonMaxZoom;
-        cameraState->ZoomSettings.MinZoom = -1.0f;
+        // Set zoom settings
+        cameraState->ZoomSettings.MaxZoom = Settings.maxZoom;
+        cameraState->ZoomSettings.MinZoom = 0f;
 
-        var flag = cameraState->Current.Zoom > 0.0;
-        var num = flag ? cameraState->Current.Zoom / cameraState->ZoomSettings.MaxZoom : 0.0f;
-        var lookat = cameraState->Current.LookAtRootPos;
-        var lmod = 0.085f;
-        var pc = cameraState->Current.Pitch / (cameraState->ZoomSettings.MaxPitch / 100);
-        if (pc <= 0) pc = 0;
-
-        var yx = Mathf.SmoothStep(lookat.y, lookat.y + lmod, (100 - pc) * 0.01f);
-        var yz = Mathf.SmoothStep(1.24f, 1.80f, (100 - pc) * 0.01f);
-
-        lookat.y = (float)Math.Round(yx, 2);
-        if (cameraState->Current.Zoom < 0.8f)
+        // Check camera behaviours for activation
+        foreach (var behaviour in ModernCameraState.cameraBehaviours.Values)
         {
-            if (!ModernCameraState.isInitialized)
+            if (behaviour.ShouldActivate(ref *cameraState))
             {
-                ModernCameraState.isInitialized = true;
-                ModernCameraState.isMenuOpen = false;
+                ModernCameraState.currentCameraBehaviour!.Deactivate();
+                behaviour.cameraSystem = new TopdownCameraSystem(_this);
+                behaviour.Activate(ref *cameraState);
+                break;
             }
-
-            ModernCameraState.isFirstPerson = true;
-            cameraState->ZoomSettings.MinPitch = -1.5f;
-            cameraState->Current.Zoom = -1.0f;
-            cameraState->Current.NormalizedLookAtOffset.y = flag ? Mathf.Lerp(1f, 0.0f, num) : 0.0f;
         }
-        else
+
+        // Update current camera behaviour
+        if (ModernCameraState.currentCameraBehaviour != null)
         {
-            ModernCameraState.isFirstPerson = false;
-            cameraState->Current.NormalizedLookAtOffset.y = 0.0f;
-            cameraData->LookAtHeight = (float)Math.Round(yz, 2);
+            ModernCameraState.currentCameraBehaviour.cameraSystem = new TopdownCameraSystem(_this);
+
+            if (!ModernCameraState.currentCameraBehaviour.active)
+                ModernCameraState.currentCameraBehaviour.Activate(ref *cameraState);
+            
+            ModernCameraState.currentCameraBehaviour.UpdateCameraInputs(ref *cameraState, ref *cameraData);
         }
 
         cameraData->StandardZoomSettings = cameraState->ZoomSettings;
