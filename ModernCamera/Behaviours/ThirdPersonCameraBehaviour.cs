@@ -16,9 +16,13 @@ internal class ThirdPersonCameraBehaviour : CameraBehaviour
     {
         base.Activate(ref state);
 
+        if (ModernCameraState.currentBehaviourType == type)
+            targetZoom = Settings.maxZoom / 2;
+        else
+            targetZoom = Settings.minZoom;
+
         ModernCameraState.currentBehaviourType = type;
         state.PitchPercent = 0.5f;
-        targetZoom = Settings.minZoom;
     }
 
     internal override bool ShouldActivate(ref TopdownCameraState state)

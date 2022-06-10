@@ -1,8 +1,7 @@
-﻿namespace ModernCamera.Enums
+﻿namespace ModernCamera.Enums;
+
+internal enum CameraRotateMode
 {
-    internal enum CameraRotateMode
-    {
-        Toggle,
-        Held
-    }
+    Toggle,
+    Held
 }

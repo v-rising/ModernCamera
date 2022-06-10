@@ -1,6 +1,5 @@
 ﻿using ModernCamera.Behaviours;
 using ModernCamera.Enums;
-using ModernCamera.Structs;
 using ProjectM;
 using System;
 using System.Collections.Generic;

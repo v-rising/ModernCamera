@@ -1,7 +1,5 @@
 ﻿using ModernCamera.Enums;
 using ProjectM;
-using ProjectM.Presentation;
-using System;
 
 namespace ModernCamera.Behaviours;
 
