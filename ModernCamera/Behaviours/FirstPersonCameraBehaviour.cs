@@ -40,7 +40,7 @@ internal class FirstPersonCameraBehaviour : CameraBehaviour
     {
         base.UpdateCameraInputs(ref state, ref data);
 
-        state.LastTarget.NormalizedLookAtOffset.z = 1.65f;
-        state.LastTarget.NormalizedLookAtOffset.y = 0.9f;
+        state.LastTarget.NormalizedLookAtOffset.z = Settings.firstPersonForwardOffset;
+        state.LastTarget.NormalizedLookAtOffset.y = Settings.headHeightOffset;
     }
 }

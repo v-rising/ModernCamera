@@ -11,6 +11,7 @@ internal abstract class CameraBehaviour
     internal BehaviourType type;
     internal float defaultMaxPitch;
     internal float defaultMinPitch;
+    internal bool probablyShapeshiftedOrMounted;
     internal bool active;
 
     protected float targetZoom = Settings.maxZoom / 2;
@@ -40,9 +41,15 @@ internal abstract class CameraBehaviour
         {
             // Consume zoom input for the camera
             var zoomChange = inputState.GetAnalogValue(AnalogInput.ZoomCamera) > 0 ? 2 : -2;
-            targetZoom = Mathf.Clamp(targetZoom + zoomChange, 0, Settings.maxZoom);
+            if (targetZoom > Settings.minZoom && targetZoom + zoomChange < Settings.minZoom)
+                targetZoom = Settings.minZoom;
+            else
+                targetZoom = Mathf.Clamp(targetZoom + zoomChange, 0, Settings.maxZoom);
             inputState.SetAnalogValue(AnalogInput.ZoomCamera, 0);
         }
+
+        if (Settings.invertY)
+            inputState.SetAnalogValue(AnalogInput.RotateCameraY, -inputState.GetAnalogValue(AnalogInput.RotateCameraY));
     }
 
     internal virtual void UpdateCameraInputs(ref TopdownCameraState state, ref TopdownCamera data)

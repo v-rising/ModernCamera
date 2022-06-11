@@ -23,8 +23,19 @@ internal static class Mouse
 
     internal static bool SetCursorPosition(int x, int y)
     {
-        var rect = Window.GetWindowRect();
-        return SetCursorPos(rect.Left + Screen.width / 2, rect.Top + Screen.height / 2);
+        var windowRect = Window.GetWindowRect();
+        var clientRect = Window.GetClientRect();
+
+        var borderWidth = ((windowRect.Right - windowRect.Left) - clientRect.Right) / 2;
+        var offsetTop = ((windowRect.Bottom - windowRect.Top) - clientRect.Bottom) - borderWidth;
+
+        return SetCursorPos(windowRect.Left + borderWidth + x, windowRect.Top + offsetTop + y);
+    }
+
+    internal static void CenterCursorPosition()
+    {
+        var rect = Window.GetClientRect();
+        SetCursorPosition((rect.Right - rect.Left) / 2, (rect.Bottom - rect.Top) / 2);
     }
 
     internal static POINT GetCursorPosition()

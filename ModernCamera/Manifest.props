@@ -1,0 +1,28 @@
+﻿<Project>
+  <Target Name="AddManifestFile" BeforeTargets="BeforeBuild" Inputs="$(MSBuildAllProjects)" Outputs="$(IntermediateOutputPath)GeneratedFile.json">
+    <PropertyGroup>
+      <PluginName Condition="'$(PluginName)' == ''">$(Product)</PluginName>
+      <PluginVersion Condition="'$(PluginVersion)' == ''">$(Version)</PluginVersion>
+      <PluginURL Condition="'$(PluginURL)' == ''">$(PackageProjectUrl)</PluginURL>
+      <PluginDescription Condition="'$(PluginDescription)' == ''">$(Description)</PluginDescription>
+      <GeneratedText>
+        <![CDATA[
+{
+    "name": "$(PluginName)",
+    "version_number": "$(PluginVersion)",
+    "website_url": "$(PluginURL)",
+    "description": "$(PluginDescription)",
+    "dependencies": [
+        "BepInEx-BepInExPack_V_Rising-1.0.0"
+    ]
+}
+     ]]>
+      </GeneratedText>
+      <GeneratedFilePath>$(IntermediateOutputPath)manifest.json</GeneratedFilePath>
+    </PropertyGroup>
+    <ItemGroup>
+      <FileWrites Include="$(GeneratedFilePath)" />
+    </ItemGroup>
+    <WriteLinesToFile Lines="$(GeneratedText)" File="$(GeneratedFilePath)" WriteOnlyWhenDifferent="true" Overwrite="true" />
+  </Target>
+</Project>

@@ -1,5 +1,6 @@
 ﻿using ModernCamera.Enums;
 using ProjectM;
+using UnityEngine;
 
 namespace ModernCamera.Behaviours;
 
@@ -34,6 +35,8 @@ internal class ThirdPersonCameraBehaviour : CameraBehaviour
     {
         base.UpdateCameraInputs(ref state, ref data);
 
-        state.LastTarget.NormalizedLookAtOffset.y = 0.9f;
+        state.LastTarget.NormalizedLookAtOffset.y = Settings.headHeightOffset;
+        if (Settings.overTheShoulder && !probablyShapeshiftedOrMounted)
+            state.LastTarget.NormalizedLookAtOffset.x = Mathf.Lerp(Settings.shoulderRightOffset, 0, state.Current.Zoom / state.ZoomSettings.MaxZoom);
     }
 }

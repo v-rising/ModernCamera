@@ -1,10 +1,8 @@
 ﻿using BepInEx.IL2CPP.Hook;
-using ModernCamera.Structs;
 using ModernCamera.Utils;
 using ProjectM;
 using System;
 using System.Runtime.InteropServices;
-using UnityEngine;
 
 namespace ModernCamera.Hooks;
 
@@ -49,6 +47,8 @@ internal static class TopdownCameraSystem_Hook
 
     private static unsafe void UpdateCameraInputsHook(IntPtr _this, TopdownCameraState* cameraState, TopdownCamera* cameraData)
     {
+        ModernCameraState.currentCameraBehaviour!.probablyShapeshiftedOrMounted = cameraState->ZoomSettings.MinZoom > 0;
+
         // Set zoom settings
         cameraState->ZoomSettings.MaxZoom = Settings.maxZoom;
         cameraState->ZoomSettings.MinZoom = 0f;

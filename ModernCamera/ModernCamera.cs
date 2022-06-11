@@ -2,13 +2,18 @@
 using ModernCamera.Enums;
 using ModernCamera.Utils;
 using ProjectM;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace ModernCamera;
 
 public class ModernCamera : MonoBehaviour
 {
-    public void Awake()
+    private GameObject crosshair;
+    private bool gameFocused;
+
+    private void Awake()
     {
         ModernCameraState.RegisterCameraBehaviour(new FirstPersonCameraBehaviour());
         ModernCameraState.RegisterCameraBehaviour(new ThirdPersonCameraBehaviour());
@@ -16,44 +21,61 @@ public class ModernCamera : MonoBehaviour
         ModernCameraState.gamehandle = Window.GetWindow("VRising");
     }
 
-    public void Update()
+    private void Update()
     {
-        ModernCameraState.keyMappings.TryGetValue(InputFlag.RotateCamera, out var rotateCameraMapping);
+        if (!gameFocused) return;
 
-        // Toggles isMenuOpen for the action wheel
-        if (ModernCameraState.keyMappings.TryGetValue(InputFlag.ToggleActionWheel, out var actionMapping))
-            if (Input.GetKey(actionMapping.PrimaryKeyCode) || Input.GetKey(actionMapping.SecondaryKeyCode))
-                ModernCameraState.isMenuOpen = true;
-            else if (Input.GetKeyUp(actionMapping.PrimaryKeyCode) || Input.GetKeyUp(actionMapping.SecondaryKeyCode))
-                ModernCameraState.isMenuOpen = false;
-
-        // Toggles isMenuOpen for the emote wheel
-        if (ModernCameraState.keyMappings.TryGetValue(InputFlag.ToggleEmoteWheel, out var emoteMapping))
-            if (Input.GetKey(emoteMapping.PrimaryKeyCode) || Input.GetKey(emoteMapping.SecondaryKeyCode))
-                ModernCameraState.isMenuOpen = true;
-            else if (Input.GetKeyUp(emoteMapping.PrimaryKeyCode) || Input.GetKeyUp(emoteMapping.SecondaryKeyCode))
-                ModernCameraState.isMenuOpen = false;
-
-        // Toggles camera rotate lock if Toggle mode is set in settings
-        if (Settings.cameraRotateMode == CameraRotateMode.Toggle && !ModernCameraState.isFirstPerson &&
-            (Input.GetKeyDown(rotateCameraMapping.PrimaryKeyCode) || Input.GetKeyDown(rotateCameraMapping.SecondaryKeyCode)))
-            ModernCameraState.isMouseLocked = !ModernCameraState.isMouseLocked;
-
-
-        var lockState = CursorLockMode.None;
-        // Locks the mouse to center of screen if mouse should be locked or camera rotate button is pressed
-        if ((ModernCameraState.isMouseLocked || Input.GetKey(rotateCameraMapping.PrimaryKeyCode) || Input.GetKey(rotateCameraMapping.SecondaryKeyCode)) && !ModernCameraState.isMenuOpen)
+        if (crosshair == null)
         {
-            if (ModernCameraState.isFirstPerson || Settings.aimMode == CameraAimMode.Forward)
-                lockState = CursorLockMode.Locked;
-            else
-                lockState = CursorLockMode.Confined;
-
-            // Forces cursor visible in first person
-            if (ModernCameraState.isFirstPerson)
-                Cursor.visible = true;
+            var uiCanvas = GameObject.Find("HUDCanvas(Clone)/Canvas");
+            if (uiCanvas != null)
+                crosshair = BuildCrosshair(uiCanvas.transform);
         }
 
-        Cursor.lockState = lockState;
+
+        // Toggles camera rotate lock if Toggle mode is set in settings
+        if (!ModernCameraState.isMenuOpen && Settings.cameraRotateMode == CameraRotateMode.Toggle && !ModernCameraState.isFirstPerson && ModernCameraState.gameplayInputState.IsInputDown(InputFlag.RotateCamera))
+            ModernCameraState.isMouseLocked = !ModernCameraState.isMouseLocked;
+
+        var cursorVisible = true;
+        var crosshairVisible = false;
+        // Locks the mouse to center of screen if mouse should be locked or camera rotate button is pressed
+        if ((ModernCameraState.isMouseLocked || ModernCameraState.gameplayInputState.IsInputPressed(InputFlag.RotateCamera)) && !ModernCameraState.isMenuOpen)
+        {
+            if (ModernCameraState.isFirstPerson || Settings.cameraAimMode == CameraAimMode.Forward)
+                Mouse.CenterCursorPosition();
+
+            crosshairVisible = ModernCameraState.isFirstPerson;
+            cursorVisible = false;
+        }
+
+        if (crosshair != null)
+            crosshair.active = crosshairVisible;
+        Cursor.visible = cursorVisible;
+    }
+
+    private void OnApplicationFocus(bool hasFocus)
+    {
+        gameFocused = hasFocus;
+    }
+
+    private GameObject BuildCrosshair(Transform transform)
+    {
+        var cursorData = CursorController._CursorDatas.First(x => x.CursorType == CursorType.Game_Normal);
+        var gameObject = new GameObject("Crosshair");
+        gameObject.active = false;
+        gameObject.AddComponent<CanvasRenderer>();
+        var rectTransform = gameObject.AddComponent<RectTransform>();
+        rectTransform.parent = transform;
+        rectTransform.transform.SetSiblingIndex(1);
+        rectTransform.pivot = new Vector2(0.5f, 0.5f);
+        rectTransform.anchorMin = new Vector2(0.5f, 0.5f);
+        rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+        rectTransform.sizeDelta = new Vector2(32, 32);
+        rectTransform.localScale = new Vector3(1.2f, 1.2f, 1.2f);
+        rectTransform.localPosition = new Vector3(0, 0, 0);
+        var image = gameObject.AddComponent<Image>();
+        image.overrideSprite = Sprite.Create(cursorData.Texture, new Rect(0, 0, cursorData.Texture.width, cursorData.Texture.height), new Vector2(0.5f, 0.5f), 100f);
+        return gameObject;
     }
 }

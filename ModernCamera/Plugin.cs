@@ -11,7 +11,7 @@ namespace ModernCamera;
 [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
 public class Plugin : BasePlugin
 {
-    public static ManualLogSource Logger;
+    internal static ManualLogSource Logger;
 
     private static Harmony harmony;
 
@@ -26,7 +26,7 @@ public class Plugin : BasePlugin
 
         TopdownCameraSystem_Hook.CreateAndApply();
 
-        harmony = new Harmony("Travanti.ModernCamera");
+        harmony = new Harmony(PluginInfo.PLUGIN_GUID);
         harmony.PatchAll();
 
         Log.LogInfo($"Plugin Travanti - Inc - Modern - Camera is loaded!");

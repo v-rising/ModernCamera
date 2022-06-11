@@ -9,24 +9,47 @@ Makes the camera more like a mmo camera and removes the limits.
 </ul>
 </details>
 
+### Features
+- First person camera view
+- Third person camera view
+- Camera rotation locking
+    - Locked by default in first person
+    - Toggleable in third person
+- Invert Y axis
+
 ### Installation
 - Install [BepInEx](https://v-rising.thunderstore.io/package/BepInEx/BepInExPack_V_Rising/)
 - Extract _ModernCamera.dll_ into _(VRising folder)/BepInEx/plugins_
 
 ### Known Issues
 - Zooming in to far causes some world space UI elements to become fully transparent
+- Target info bar (top center) is always visible for player when locked in third person view
+- After V Blood feeding it will always place you in third person view
+- Exiting build mode will always place you in third person view
 
 ### Support
 Join the [modding community](https://dev.il.gy) for support and tag `@iZastic#0365` or `@Dimentox#1154`
 
-### NEWS
-`iZastic#0365` Has joined up and is taking over lead of this project. We decided to focus on one camera mod vs many!!!
+Submit a tickat on [GitHub](https://github.com/v-rising/ModernCamera/issues)
 
-###  Special Thanks
-special thanks to Kunogi `@牧瀬紅莉栖#1570` for the help with the camera zoom!
+###  Contributors
+- Kunogi: `@牧瀬紅莉栖#1570` on Discord
+- Dimentox: `@Dimentox#1154` on Discord
+- iZastic: `@iZastic#0365` on Discord
+
+### Changelog
+`1.2.0`
+- Fixed mouse lock issue cause by Unity bug since version 2019
+- Fixed mouse staying locked when leaving game to main menu
+- Fixed mouse staying locked in options menu
+- Stopped using Unity cursor locking and now manually sets mouse position when locked
+    - This may fixed compatability issues with the NoGameCursor mod
+- Added a config option for inverting the camera Y axis
+- Added a config option for camera max zoom
+- Added a config option for showing roof in third person
+- Added a config option for an over the shoulder view
 
 <details>
-<summary>Changelog</summary>
 
 `1.1.0`
 - Added first person support

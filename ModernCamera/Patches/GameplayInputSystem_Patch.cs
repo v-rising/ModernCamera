@@ -14,5 +14,6 @@ internal static class GameplayInputSystem_Patch
         {
             inputState.InputsPressed |= InputFlag.RotateCamera;
         }
+        ModernCameraState.gameplayInputState = inputState;
     }
 }
