@@ -27,7 +27,8 @@ internal class FirstPersonCameraBehaviour : CameraBehaviour
     {
         base.Deactivate();
 
-        ModernCameraState.IsMouseLocked = false;
+        if (!ModernCameraState.IsActionMode)
+            ModernCameraState.IsMouseLocked = false;
         ModernCameraState.IsFirstPerson = false;
     }
 

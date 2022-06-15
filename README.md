@@ -49,6 +49,16 @@ Submit a tickat on [GitHub](https://github.com/v-rising/ModernCamera/issues)
 - iZastic: `@iZastic#0365` on Discord
 
 ### Changelog
+`1.3.1`
+- Fixed conflict with Wetstone
+- Fixed bug when trying to leave first person
+- Fixed bug with setting min/max pitch
+- Added options for over the shoulder offsets
+- Added option for crosshair in action mode
+- Added option to lock zoom
+
+<details>
+
 `1.3.0`
 - Added all config options to the in game options menu
 - Added keybinding for action mode
@@ -57,8 +67,6 @@ Submit a tickat on [GitHub](https://github.com/v-rising/ModernCamera/issues)
 - Added option to use default build mode zoom/pitch
 - Removed camera rotation toggle (use action mode now)
 - Fixed mouse moving around when rotation is locked
-
-<details>
 
 `1.2.0`
 - Fixed mouse lock issue cause by Unity bug since version 2019

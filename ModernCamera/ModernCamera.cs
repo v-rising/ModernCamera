@@ -40,7 +40,7 @@ public class ModernCamera : MonoBehaviour
             if (ModernCameraState.IsActionMode || ModernCameraState.IsFirstPerson || Settings.CameraAimMode == CameraAimMode.Forward)
                 Mouse.CenterCursorPosition();
 
-            crosshairVisible = ModernCameraState.IsFirstPerson;
+            crosshairVisible = ModernCameraState.IsFirstPerson || (ModernCameraState.IsActionMode && Settings.ActionModeCrosshair);
             cursorVisible = false;
         }
 

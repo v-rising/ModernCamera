@@ -43,7 +43,7 @@ internal abstract class CameraBehaviour
         {
             // Consume zoom input for the camera
             var zoomChange = inputState.GetAnalogValue(AnalogInput.ZoomCamera) > 0 ? 2 : -2;
-            if (TargetZoom > Settings.MinZoom && TargetZoom + zoomChange < Settings.MinZoom)
+            if ((TargetZoom > Settings.MinZoom && TargetZoom + zoomChange < Settings.MinZoom) || (ModernCameraState.IsFirstPerson && zoomChange > 0))
                 TargetZoom = Settings.MinZoom;
             else
                 TargetZoom = Mathf.Clamp(TargetZoom + zoomChange, Settings.FirstPersonEnabled ? 0 : Settings.MinZoom, Settings.MaxZoom);
