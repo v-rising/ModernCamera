@@ -8,9 +8,9 @@ internal static class OptionsMenu_Base_Patch
 {
     [HarmonyPostfix]
     [HarmonyPatch(typeof(OptionsMenu_Base), nameof(OptionsMenu_Base.Start))]
-    private static void Start() => ModernCameraState.isMenuOpen = true;
+    private static void Start() => ModernCameraState.IsMenuOpen = true;
 
     [HarmonyPostfix]
     [HarmonyPatch(typeof(OptionsMenu_Base), nameof(OptionsMenu_Base.OnDestroy))]
-    private static void OnDestroy() => ModernCameraState.isMenuOpen = false;
+    private static void OnDestroy() => ModernCameraState.IsMenuOpen = false;
 }

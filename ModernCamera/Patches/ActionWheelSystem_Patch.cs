@@ -6,21 +6,21 @@ namespace ModernCamera.Patches;
 [HarmonyPatch]
 internal static class ActionWheelSystem_Patch
 {
-    private static bool wheelVisible;
+    private static bool WheelVisible;
 
     [HarmonyPostfix]
     [HarmonyPatch(typeof(ActionWheelSystem), nameof(ActionWheelSystem.OnUpdate))]
     private static void OnUpdate(ActionWheelSystem __instance)
     {
-        if (!wheelVisible && (__instance._ActionWheel.IsVisible() || __instance._EmoteWheel.IsVisible()))
+        if (!WheelVisible && (__instance._ActionWheel.IsVisible() || __instance._EmoteWheel.IsVisible()))
         {
-            ModernCameraState.isMenuOpen = true;
-            wheelVisible = true;
+            ModernCameraState.IsMenuOpen = true;
+            WheelVisible = true;
         }
-        else if (wheelVisible && !__instance._ActionWheel.IsVisible() && !__instance._EmoteWheel.IsVisible())
+        else if (WheelVisible && !__instance._ActionWheel.IsVisible() && !__instance._EmoteWheel.IsVisible())
         {
-            ModernCameraState.isMenuOpen = false;
-            wheelVisible = false;
+            ModernCameraState.IsMenuOpen = false;
+            WheelVisible = false;
         }
     }
 }

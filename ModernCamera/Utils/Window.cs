@@ -23,14 +23,14 @@ internal static class Window
     public static RECT GetWindowRect()
     {
         var rect = new RECT();
-        GetWindowRect(ModernCameraState.gamehandle, ref rect);
+        GetWindowRect(ModernCameraState.Gamehandle, ref rect);
         return rect;
     }
 
     public static RECT GetClientRect()
     {
         var rect = new RECT();
-        GetClientRect(ModernCameraState.gamehandle, ref rect);
+        GetClientRect(ModernCameraState.Gamehandle, ref rect);
         return rect;
     }
 }

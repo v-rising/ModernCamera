@@ -7,40 +7,40 @@ internal class FirstPersonCameraBehaviour : CameraBehaviour
 {
     internal FirstPersonCameraBehaviour()
     {
-        type = BehaviourType.FirstPerson;
-        defaultMaxPitch = 1.57f;
-        defaultMinPitch = -1.57f;
+        BehaviourType = BehaviourType.FirstPerson;
+        DefaultMaxPitch = 1.57f;
+        DefaultMinPitch = -1.57f;
     }
 
     internal override void Activate(ref TopdownCameraState state)
     {
         base.Activate(ref state);
 
-        ModernCameraState.isMouseLocked = true;
-        ModernCameraState.isFirstPerson = true;
-        ModernCameraState.currentBehaviourType = type;
+        ModernCameraState.IsMouseLocked = true;
+        ModernCameraState.IsFirstPerson = true;
+        ModernCameraState.CurrentBehaviourType = BehaviourType;
         state.PitchPercent = 0.5f;
-        targetZoom = 0;
+        TargetZoom = 0;
     }
 
     internal override void Deactivate()
     {
         base.Deactivate();
 
-        ModernCameraState.isMouseLocked = false;
-        ModernCameraState.isFirstPerson = false;
+        ModernCameraState.IsMouseLocked = false;
+        ModernCameraState.IsFirstPerson = false;
     }
 
     internal override bool ShouldActivate(ref TopdownCameraState state)
     {
-        return ModernCameraState.currentBehaviourType != type && state.Target.Zoom < Settings.minZoom;
+        return Settings.FirstPersonEnabled && ModernCameraState.CurrentBehaviourType != BehaviourType && state.Target.Zoom < Settings.MinZoom;
     }
 
     internal override void UpdateCameraInputs(ref TopdownCameraState state, ref TopdownCamera data)
     {
         base.UpdateCameraInputs(ref state, ref data);
 
-        state.LastTarget.NormalizedLookAtOffset.z = Settings.firstPersonForwardOffset;
-        state.LastTarget.NormalizedLookAtOffset.y = Settings.headHeightOffset;
+        state.LastTarget.NormalizedLookAtOffset.z = Settings.FirstPersonForwardOffset;
+        state.LastTarget.NormalizedLookAtOffset.y = Settings.HeadHeightOffset;
     }
 }

@@ -1,77 +1,111 @@
-﻿using BepInEx.Configuration;
-using ModernCamera.Enums;
+﻿using ModernCamera.Enums;
+using Silkworm.API;
+using Silkworm.Core.KeyBinding;
+using Silkworm.Core.Options;
+using System;
 using UnityEngine;
 
 namespace ModernCamera;
 
 internal static class Settings
 {
-    private static ConfigEntry<string> _cameraRotateMode;
-    internal static CameraRotateMode cameraRotateMode
+    internal static bool InvertY { get => InvertYOption.Value; }
+    internal static float MinZoom { get => MinZoomOption.Value; }
+    internal static float MaxZoom { get => MaxZoomOption.Value; }
+    internal static float MinPitch { get => MinPitchOption.Value * Mathf.Deg2Rad; }
+    internal static float MaxPitch { get => MaxPitchOption.Value * Mathf.Deg2Rad; }
+    internal static bool LockPitch { get => LockCameraPitchOption.Value; }
+    internal static float LockPitchAngle { get => LockCameraPitchAngleOption.Value * Mathf.Deg2Rad; }
+    internal static bool FirstPersonEnabled { get => FirstPersonEnabledOption.Value; }
+    internal static bool DefaultBuildMode { get => DefaultBuildModeOption.Value; }
+    internal static bool ThirdPersonRoof { get => ThirdPersonRoofOption.Value; }
+    internal static bool OverTheShoulder { get => OverTheShoulderOption.Value; }
+    internal static CameraAimMode CameraAimMode { get => CameraAimModeOption.GetEnumValue<CameraAimMode>(); }
+
+    internal static float FirstPersonForwardOffset = 1.65f;
+    internal static float HeadHeightOffset = 0.9f;
+    internal static float ShoulderRightOffset = 0.8f;
+
+    private static float ZoomOffset = 2;
+
+    private static ToggleOption InvertYOption;
+    private static SliderOption MinZoomOption;
+    private static SliderOption MaxZoomOption;
+    private static SliderOption MinPitchOption;
+    private static SliderOption MaxPitchOption;
+    private static ToggleOption LockCameraPitchOption;
+    private static SliderOption LockCameraPitchAngleOption;
+    private static ToggleOption FirstPersonEnabledOption;
+    private static ToggleOption DefaultBuildModeOption;
+    private static DropdownOption CameraAimModeOption;
+    private static ToggleOption ThirdPersonRoofOption;
+    private static ToggleOption OverTheShoulderOption;
+
+    private static Keybinding ActionModeKeybind;
+
+    internal static void Init()
     {
-        get
-        {
-            switch (_cameraRotateMode.Value)
-            {
-                case "toggle":
-                case "Toggle":
-                    return CameraRotateMode.Toggle;
-                case "held":
-                case "Held":
-                default:
-                    return CameraRotateMode.Held;
-            }
-        }
+        SetupOptions();
+        SetupKeybinds();
     }
 
-
-    private static ConfigEntry<string> _aimMode;
-    internal static CameraAimMode cameraAimMode
+    private static void SetupOptions()
     {
-        get
+        var category = OptionsManager.AddCategory("Modern Camera");
+        InvertYOption = category.AddToggle("moderncamera.inverty", "Invert Y", false);
+        MinZoomOption = category.AddSlider("moderncamera.minzoom", "Third Person Min Zoom", 1, 18, 2);
+        MaxZoomOption = category.AddSlider("moderncamera.maxzoom", "Third Person Max Zoom", 3, 20, 18);
+        MinPitchOption = category.AddSlider("moderncamera.minpitch", "Third Person Min Pitch", 0, 90, 9);
+        MaxPitchOption = category.AddSlider("moderncamera.maxpitch", "Third Person Max Pitch", 0, 90, 90);
+        LockCameraPitchOption = category.AddToggle("moderncamera.lockpitch", "Lock Camera Pitch", false);
+        LockCameraPitchAngleOption = category.AddSlider("moderncamera.lockpitchangle", "Lock Camera Pitch Angle", 0, 90, 60);
+        FirstPersonEnabledOption = category.AddToggle("moderncamera.firstperson", "Enable First Person", true);
+        DefaultBuildModeOption = category.AddToggle("moderncamera.defaultbuildmode", "Default Build Mode Camera", true);
+        ThirdPersonRoofOption = category.AddToggle("moderncamera.thirdpersonroot", "Castle Roof in Third Person", false);
+        OverTheShoulderOption = category.AddToggle("moderncamera.overtheshoulder", "Use Over the Shoulder Offset", false);
+        CameraAimModeOption = category.AddDropdown("moderncamera.aimmode", "Aim Mode", (int)CameraAimMode.Default, Enum.GetNames(typeof(CameraAimMode)));
+
+        MinZoomOption.AddListener(value =>
         {
-            switch (_aimMode.Value)
-            {
-                case "forward":
-                case "Forward":
-                    return CameraAimMode.Forward;
-                case "default":
-                case "Default":
-                default:
-                    return CameraAimMode.Default;
-            }
-        }
+            if (value + ZoomOffset > MaxZoom && value + ZoomOffset < MaxZoomOption.MaxValue)
+                MaxZoomOption.SetValue(value + ZoomOffset);
+            else if (value + ZoomOffset > MaxZoomOption.MaxValue)
+                MinZoomOption.SetValue(MaxZoomOption.MaxValue - ZoomOffset);
+        });
+
+        MaxZoomOption.AddListener(value =>
+        {
+            if (value - ZoomOffset < MinZoom && value - ZoomOffset > MinZoomOption.MinValue)
+                MinZoomOption.SetValue(value - ZoomOffset);
+            else if (value - ZoomOffset < MinZoomOption.MinValue)
+                MaxZoomOption.SetValue(MinZoomOption.MinValue + ZoomOffset);
+        });
+
+        MinPitchOption.AddListener(value =>
+        {
+            if (value > MaxPitchOption.Value && value < MaxPitchOption.MaxValue)
+                MaxPitchOption.SetValue(value);
+            else if (value > MaxPitchOption.MaxValue)
+                MinPitchOption.SetValue(MaxPitchOption.MaxValue);
+        });
+
+        MaxPitchOption.AddListener(value =>
+        {
+            if (value < MinPitchOption.Value && value > MinPitchOption.MinValue)
+                MinPitchOption.SetValue(value);
+            else if (value < MinPitchOption.MinValue)
+                MaxPitchOption.SetValue(MinPitchOption.MinValue);
+        });
     }
 
-
-    private static ConfigEntry<bool> _invertY;
-    internal static bool invertY { get { return _invertY.Value; } }
-
-
-    private static ConfigEntry<bool> _thirdPersonRoof;
-    internal static bool thirdPersonRoof { get { return _thirdPersonRoof.Value; } }
-
-
-    private static ConfigEntry<bool> _overTheShoulder;
-    internal static bool overTheShoulder { get { return _overTheShoulder.Value; } }
-
-
-    private static ConfigEntry<float> _maxZoom;
-    internal static float maxZoom { get { return Mathf.Clamp(_maxZoom.Value, 4, 20); } }
-
-
-    internal static float firstPersonForwardOffset = 1.65f;
-    internal static float headHeightOffset = 0.9f;
-    internal static float shoulderRightOffset = 0.8f;
-    internal static float minZoom = 2f;
-
-    internal static void Load(ConfigFile config)
+    private static void SetupKeybinds()
     {
-        _invertY = config.Bind("Default", "InvertY", false, "[true|false] Invert the Y axis");
-        _maxZoom = config.Bind("Default", "MaxZoom", 18f, "[4 - 20] How far the camera can zoom out");
-        _cameraRotateMode = config.Bind("Default", "CameraRotateMode", "Held", "[Toggle|Held] Hold button or toggle camera rotation");
-        _aimMode = config.Bind("Default", "CameraAimMode", "Normal", "[Default|Forward] Aim abilities towards the mouse (default) or in the direction you are looking (forward) when rotating the camera");
-        _thirdPersonRoof = config.Bind("Default", "ThirdPersonRoof", false, "[true|false] Should roofs be visible when inside in third person");
-        _overTheShoulder = config.Bind("Default", "OverTheShoulder", false, "[true|false] Should third person view use an over the shoulder offset");
+        var category = KeybindingsManager.AddCategory("Modern Camera");
+        ActionModeKeybind = category.AddKeyBinding("moderncamera.actionmode", "Action Mode");
+        ActionModeKeybind.AddKeyDownListener(() =>
+        {
+            ModernCameraState.IsMouseLocked = !ModernCameraState.IsMouseLocked;
+            ModernCameraState.IsActionMode = !ModernCameraState.IsActionMode;
+        });
     }
 }

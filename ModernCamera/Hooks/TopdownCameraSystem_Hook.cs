@@ -1,6 +1,6 @@
 ﻿using BepInEx.IL2CPP.Hook;
-using ModernCamera.Utils;
 using ProjectM;
+using Silkworm.Utils;
 using System;
 using System.Runtime.InteropServices;
 
@@ -23,12 +23,12 @@ internal static class TopdownCameraSystem_Hook
     {
         if (UpdateCameraInputsDetour == null)
         {
-            UpdateCameraInputsDetour = NativeDetour.Create(typeof(TopdownCameraSystem), "UpdateCameraInputs", "OriginalLambdaBody", UpdateCameraInputsHook, out UpdateCameraInputsOriginal);
+            UpdateCameraInputsDetour = DetourUtils.Create(typeof(TopdownCameraSystem), "UpdateCameraInputs", "OriginalLambdaBody", UpdateCameraInputsHook, out UpdateCameraInputsOriginal);
         }
 
         if (HandleInputDetour == null)
         {
-            HandleInputDetour = NativeDetour.Create(typeof(TopdownCameraSystem), "HandleInput", HandleInputHook, out HandleInputOriginal);
+            HandleInputDetour = DetourUtils.Create(typeof(TopdownCameraSystem), "HandleInput", HandleInputHook, out HandleInputOriginal);
         }
     }
 
@@ -40,40 +40,40 @@ internal static class TopdownCameraSystem_Hook
 
     private static unsafe void HandleInputHook(IntPtr _this, InputState* inputState)
     {
-        ModernCameraState.currentCameraBehaviour!.HandleInput(ref *inputState);
+        ModernCameraState.CurrentCameraBehaviour!.HandleInput(ref *inputState);
 
         HandleInputOriginal!(_this, inputState);
     }
 
     private static unsafe void UpdateCameraInputsHook(IntPtr _this, TopdownCameraState* cameraState, TopdownCamera* cameraData)
     {
-        ModernCameraState.currentCameraBehaviour!.probablyShapeshiftedOrMounted = cameraState->ZoomSettings.MinZoom > 0;
+        ModernCameraState.CurrentCameraBehaviour!.ProbablyShapeshiftedOrMounted = cameraState->ZoomSettings.MinZoom > 0;
 
         // Set zoom settings
-        cameraState->ZoomSettings.MaxZoom = Settings.maxZoom;
+        cameraState->ZoomSettings.MaxZoom = Settings.MaxZoom;
         cameraState->ZoomSettings.MinZoom = 0f;
 
         // Check camera behaviours for activation
-        foreach (var behaviour in ModernCameraState.cameraBehaviours.Values)
+        foreach (var behaviour in ModernCameraState.CameraBehaviours.Values)
         {
             if (behaviour.ShouldActivate(ref *cameraState))
             {
-                ModernCameraState.currentCameraBehaviour!.Deactivate();
-                behaviour.cameraSystem = new TopdownCameraSystem(_this);
+                ModernCameraState.CurrentCameraBehaviour!.Deactivate();
+                behaviour.CameraSystem = new TopdownCameraSystem(_this);
                 behaviour.Activate(ref *cameraState);
                 break;
             }
         }
 
         // Update current camera behaviour
-        if (ModernCameraState.currentCameraBehaviour != null)
+        if (ModernCameraState.CurrentCameraBehaviour != null)
         {
-            ModernCameraState.currentCameraBehaviour.cameraSystem = new TopdownCameraSystem(_this);
+            ModernCameraState.CurrentCameraBehaviour.CameraSystem = new TopdownCameraSystem(_this);
 
-            if (!ModernCameraState.currentCameraBehaviour.active)
-                ModernCameraState.currentCameraBehaviour.Activate(ref *cameraState);
+            if (!ModernCameraState.CurrentCameraBehaviour.Active)
+                ModernCameraState.CurrentCameraBehaviour.Activate(ref *cameraState);
             
-            ModernCameraState.currentCameraBehaviour.UpdateCameraInputs(ref *cameraState, ref *cameraData);
+            ModernCameraState.CurrentCameraBehaviour.UpdateCameraInputs(ref *cameraState, ref *cameraData);
         }
 
         cameraData->StandardZoomSettings = cameraState->ZoomSettings;

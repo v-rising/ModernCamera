@@ -10,53 +10,48 @@ namespace ModernCamera;
 
 public class ModernCamera : MonoBehaviour
 {
-    private GameObject crosshair;
-    private bool gameFocused;
+    private GameObject Crosshair;
+    private bool GameFocused;
 
     private void Awake()
     {
         ModernCameraState.RegisterCameraBehaviour(new FirstPersonCameraBehaviour());
         ModernCameraState.RegisterCameraBehaviour(new ThirdPersonCameraBehaviour());
-        ModernCameraState.currentBehaviourType = BehaviourType.ThirdPerson;
-        ModernCameraState.gamehandle = Window.GetWindow("VRising");
+        ModernCameraState.CurrentBehaviourType = BehaviourType.ThirdPerson;
+        ModernCameraState.Gamehandle = Window.GetWindow("VRising");
     }
 
     private void Update()
     {
-        if (!gameFocused) return;
+        if (!GameFocused) return;
 
-        if (crosshair == null)
+        if (Crosshair == null)
         {
             var uiCanvas = GameObject.Find("HUDCanvas(Clone)/Canvas");
             if (uiCanvas != null)
-                crosshair = BuildCrosshair(uiCanvas.transform);
+                Crosshair = BuildCrosshair(uiCanvas.transform);
         }
-
-
-        // Toggles camera rotate lock if Toggle mode is set in settings
-        if (!ModernCameraState.isMenuOpen && Settings.cameraRotateMode == CameraRotateMode.Toggle && !ModernCameraState.isFirstPerson && ModernCameraState.gameplayInputState.IsInputDown(InputFlag.RotateCamera))
-            ModernCameraState.isMouseLocked = !ModernCameraState.isMouseLocked;
 
         var cursorVisible = true;
         var crosshairVisible = false;
         // Locks the mouse to center of screen if mouse should be locked or camera rotate button is pressed
-        if ((ModernCameraState.isMouseLocked || ModernCameraState.gameplayInputState.IsInputPressed(InputFlag.RotateCamera)) && !ModernCameraState.isMenuOpen)
+        if ((ModernCameraState.IsMouseLocked || ModernCameraState.GameplayInputState.IsInputPressed(InputFlag.RotateCamera)) && !ModernCameraState.IsMenuOpen)
         {
-            if (ModernCameraState.isFirstPerson || Settings.cameraAimMode == CameraAimMode.Forward)
+            if (ModernCameraState.IsActionMode || ModernCameraState.IsFirstPerson || Settings.CameraAimMode == CameraAimMode.Forward)
                 Mouse.CenterCursorPosition();
 
-            crosshairVisible = ModernCameraState.isFirstPerson;
+            crosshairVisible = ModernCameraState.IsFirstPerson;
             cursorVisible = false;
         }
 
-        if (crosshair != null)
-            crosshair.active = crosshairVisible;
+        if (Crosshair != null)
+            Crosshair.active = crosshairVisible;
         Cursor.visible = cursorVisible;
     }
 
     private void OnApplicationFocus(bool hasFocus)
     {
-        gameFocused = hasFocus;
+        GameFocused = hasFocus;
     }
 
     private GameObject BuildCrosshair(Transform transform)

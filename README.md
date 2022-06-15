@@ -10,16 +10,27 @@ Makes the camera more like a mmo camera and removes the limits.
 </details>
 
 ### Features
-- First person camera view
-- Third person camera view
-- Camera rotation locking
-    - Locked by default in first person
-    - Toggleable in third person
-- Invert Y axis
+- Option to invert Y axis
+- Option to enable first person view
+- Option to use default build mode camera
+- First person view
+    - Alway show interior castle roof
+    - Alway lock camera rotation
+- Third person view
+    - Options to adjust min and max pitch angles
+    - Option to lock pitch angle
+    - Keybinding for action mode to lock camera rotation
+    - Option for over the shoulder offset
+    - Option to show interior castle roof
+    - Option to lock aim mode forward
 
 ### Installation
 - Install [BepInEx](https://v-rising.thunderstore.io/package/BepInEx/BepInExPack_V_Rising/)
+- Extract _Silkworm.dll_ into _(VRising folder)/BepInEx/plugins_
 - Extract _ModernCamera.dll_ into _(VRising folder)/BepInEx/plugins_
+
+### Configuration
+All configuration is done with the in game options menu
 
 ### Known Issues
 - Zooming in to far causes some world space UI elements to become fully transparent
@@ -38,6 +49,17 @@ Submit a tickat on [GitHub](https://github.com/v-rising/ModernCamera/issues)
 - iZastic: `@iZastic#0365` on Discord
 
 ### Changelog
+`1.3.0`
+- Added all config options to the in game options menu
+- Added keybinding for action mode
+- Added option for locking y axis angle
+- Added options for adjusting min/max y axis angles
+- Added option to use default build mode zoom/pitch
+- Removed camera rotation toggle (use action mode now)
+- Fixed mouse moving around when rotation is locked
+
+<details>
+
 `1.2.0`
 - Fixed mouse lock issue cause by Unity bug since version 2019
 - Fixed mouse staying locked when leaving game to main menu
@@ -48,8 +70,6 @@ Submit a tickat on [GitHub](https://github.com/v-rising/ModernCamera/issues)
 - Added a config option for camera max zoom
 - Added a config option for showing roof in third person
 - Added a config option for an over the shoulder view
-
-<details>
 
 `1.1.0`
 - Added first person support

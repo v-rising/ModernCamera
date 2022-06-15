@@ -10,10 +10,10 @@ internal static class GameplayInputSystem_Patch
     [HarmonyPatch(typeof(GameplayInputSystem), nameof(GameplayInputSystem.HandleInput))]
     private static void HandleInputPrefix(ref InputState inputState)
     {
-        if (ModernCameraState.isMouseLocked && !ModernCameraState.isMenuOpen && !inputState.IsInputPressed(InputFlag.RotateCamera))
+        if (ModernCameraState.IsMouseLocked && !ModernCameraState.IsMenuOpen && !inputState.IsInputPressed(InputFlag.RotateCamera))
         {
             inputState.InputsPressed |= InputFlag.RotateCamera;
         }
-        ModernCameraState.gameplayInputState = inputState;
+        ModernCameraState.GameplayInputState = inputState;
     }
 }

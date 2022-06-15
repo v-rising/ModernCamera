@@ -8,33 +8,34 @@ using UnhollowerRuntimeLib;
 namespace ModernCamera;
 
 [BepInProcess("VRising.exe")]
+[BepInDependency("iZastic.Silkworm")]
 [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
 public class Plugin : BasePlugin
 {
     internal static ManualLogSource Logger;
 
-    private static Harmony harmony;
+    private static Harmony Harmony;
 
     public override void Load()
     {
         Logger = Log;
 
-        Settings.Load(Config);
+        Settings.Init();
 
         ClassInjector.RegisterTypeInIl2Cpp<ModernCamera>();
         AddComponent<ModernCamera>();
 
         TopdownCameraSystem_Hook.CreateAndApply();
 
-        harmony = new Harmony(PluginInfo.PLUGIN_GUID);
-        harmony.PatchAll();
+        Harmony = new Harmony(PluginInfo.PLUGIN_GUID);
+        Harmony.PatchAll();
 
-        Log.LogInfo($"Plugin Travanti - Inc - Modern - Camera is loaded!");
+        Log.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} v{PluginInfo.PLUGIN_VERSION} is loaded!");
     }
 
     public override bool Unload()
     {
-        harmony.UnpatchSelf();
+        Harmony.UnpatchSelf();
 
         TopdownCameraSystem_Hook.Dispose();
 
