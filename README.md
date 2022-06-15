@@ -17,9 +17,11 @@ Makes the camera more like a mmo camera and removes the limits.
     - Alway show interior castle roof
     - Alway lock camera rotation
 - Third person view
+    - Keybinding for action mode to lock camera rotation
+    - Option for crosshair in action mode
     - Options to adjust min and max pitch angles
     - Option to lock pitch angle
-    - Keybinding for action mode to lock camera rotation
+    - Option to lock zoom distance
     - Option for over the shoulder offset
     - Option to show interior castle roof
     - Option to lock aim mode forward
