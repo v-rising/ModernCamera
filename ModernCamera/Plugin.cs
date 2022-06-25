@@ -30,7 +30,7 @@ public class Plugin : BasePlugin
         Harmony = new Harmony(PluginInfo.PLUGIN_GUID);
         Harmony.PatchAll();
 
-        Log.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} v{PluginInfo.PLUGIN_VERSION} is loaded!");
+        Logger.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} v{PluginInfo.PLUGIN_VERSION} is loaded!");
     }
 
     public override bool Unload()

@@ -1,7 +1,6 @@
 ﻿using ModernCamera.Behaviours;
 using ModernCamera.Enums;
 using ProjectM;
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,10 +8,13 @@ namespace ModernCamera;
 
 internal static class ModernCameraState
 {
-    internal static IntPtr Gamehandle;
     internal static bool IsFirstPerson;
     internal static bool IsActionMode;
     internal static bool IsMouseLocked;
+    internal static bool IsShapeshifted;
+    internal static bool IsMounted;
+    internal static bool InBuildMode;
+    internal static string ShapeshiftName;
     internal static InputState GameplayInputState;
     internal static BehaviourType CurrentBehaviourType = BehaviourType.Default;
     internal static Dictionary<BehaviourType, CameraBehaviour> CameraBehaviours = new();

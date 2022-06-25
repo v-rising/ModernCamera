@@ -3,43 +3,70 @@ using Silkworm.API;
 using Silkworm.Core.KeyBinding;
 using Silkworm.Core.Options;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace ModernCamera;
 
 internal static class Settings
 {
-    internal static bool InvertY { get => InvertYOption.Value; }
-    internal static bool ActionModeCrosshair { get => ActionModeCrosshairOption.Value; }
+    internal static bool Enabled { get => EnabledOption.Value; set => EnabledOption.SetValue(value); }
+    internal static bool InvertY { get => InvertYOption.Value; set => InvertYOption.SetValue(value); }
+    internal static bool AlwaysShowCrosshair { get => AlwaysShowCrosshairOption.Value; set => AlwaysShowCrosshairOption.SetValue(value); }
+    internal static bool ActionModeCrosshair { get => ActionModeCrosshairOption.Value; set => ActionModeCrosshairOption.SetValue(value); }
+    internal static bool FirstPersonEnabled { get => FirstPersonEnabledOption.Value; set => FirstPersonEnabledOption.SetValue(value); }
+    internal static bool DefaultBuildMode { get => DefaultBuildModeOption.Value; set => DefaultBuildModeOption.SetValue(value); }
+    internal static bool ThirdPersonRoof { get => ThirdPersonRoofOption.Value; set => ThirdPersonRoofOption.SetValue(value); }
 
-    internal static bool LockZoom { get => LockCameraZoomOption.Value; }
-    internal static float LockZoomDistance { get => LockCameraZoomDistanceOption.Value; }
-    internal static float MinZoom { get => MinZoomOption.Value; }
-    internal static float MaxZoom { get => MaxZoomOption.Value; }
+    internal static int AimOffsetX { get => (int)(Screen.width * (AimOffsetXOption.Value / 100)); set => AimOffsetXOption.SetValue(Mathf.Clamp(value / Screen.width, -25, 25)); }
+    internal static int AimOffsetY { get => (int)(Screen.height * (AimOffsetYOption.Value / 100)); set => AimOffsetYOption.SetValue(Mathf.Clamp(value / Screen.width, -25, 25)); }
+    internal static CameraAimMode CameraAimMode { get => CameraAimModeOption.GetEnumValue<CameraAimMode>(); set => CameraAimModeOption.SetValue((int)value); }
 
-    internal static bool LockPitch { get => LockCameraPitchOption.Value; }
-    internal static float LockPitchAngle { get => LockCameraPitchAngleOption.Value * Mathf.Deg2Rad; }
-    internal static float MinPitch { get => MinPitchOption.Value * Mathf.Deg2Rad; }
-    internal static float MaxPitch { get => MaxPitchOption.Value * Mathf.Deg2Rad; }
+    internal static bool LockZoom { get => LockCameraZoomOption.Value; set => LockCameraZoomOption.SetValue(value); }
+    internal static float LockZoomDistance { get => LockCameraZoomDistanceOption.Value; set => LockCameraZoomDistanceOption.SetValue(value); }
+    internal static float MinZoom { get => MinZoomOption.Value; set => MinZoomOption.SetValue(value); }
+    internal static float MaxZoom { get => MaxZoomOption.Value; set => MaxZoomOption.SetValue(value); }
 
-    internal static bool FirstPersonEnabled { get => FirstPersonEnabledOption.Value; }
-    internal static bool DefaultBuildMode { get => DefaultBuildModeOption.Value; }
-    internal static bool ThirdPersonRoof { get => ThirdPersonRoofOption.Value; }
+    internal static bool LockPitch { get => LockCameraPitchOption.Value; set => LockCameraPitchOption.SetValue(value); }
+    internal static float LockPitchAngle { get => LockCameraPitchAngleOption.Value * Mathf.Deg2Rad; set => LockCameraPitchAngleOption.SetValue(Mathf.Clamp(value * Mathf.Rad2Deg, 0, 90)); }
+    internal static float MinPitch { get => MinPitchOption.Value * Mathf.Deg2Rad; set => MinPitchOption.SetValue(Mathf.Clamp(value * Mathf.Rad2Deg, 0, 90)); }
+    internal static float MaxPitch { get => MaxPitchOption.Value * Mathf.Deg2Rad; set => MaxPitchOption.SetValue(Mathf.Clamp(value * Mathf.Rad2Deg, 0, 90)); }
 
-    internal static bool OverTheShoulder { get => OverTheShoulderOption.Value; }
-    internal static float OverTheShoulderX { get => OverTheShoulderXOption.Value; }
-    internal static float OverTheShoulderY { get => OverTheShoulderYOption.Value; }
+    internal static bool OverTheShoulder { get => OverTheShoulderOption.Value; set => OverTheShoulderOption.SetValue(value); }
+    internal static float OverTheShoulderX { get => OverTheShoulderXOption.Value; set => OverTheShoulderXOption.SetValue(value); }
+    internal static float OverTheShoulderY { get => OverTheShoulderYOption.Value; set => OverTheShoulderYOption.SetValue(value); }
 
-    internal static CameraAimMode CameraAimMode { get => CameraAimModeOption.GetEnumValue<CameraAimMode>(); }
 
     internal static float FirstPersonForwardOffset = 1.65f;
-    internal static float HeadHeightOffset = 0.9f;
+    internal static float MountedOffset = 1.6f;
+    internal static float HeadHeightOffset = 1.05f;
     internal static float ShoulderRightOffset = 0.8f;
+    internal static Dictionary<string, Vector2> FirstPersonShapeshiftOffsets = new Dictionary<string, Vector2>
+    {
+        { "AB_Shapeshift_Bat_Buff", new Vector2(0, 2.5f) },
+        { "AB_Shapeshift_Bear_Buff", new Vector2(0.25f, 5f) },
+        { "AB_Shapeshift_Bear_Skin01_Buff", new Vector2(0.25f, 5f) },
+        { "AB_Shapeshift_Human_Grandma_Skin01_Buff", new Vector2(-0.1f, 1.55f) },
+        { "AB_Shapeshift_Human_Buff", new Vector2(0.5f, 1.4f) },
+        { "AB_Shapeshift_Rat_Buff", new Vector2(-1.85f, 2f) },
+        { "AB_Shapeshift_Toad_Buff", new Vector2(-0.6f, 4.2f) },
+        { "AB_Shapeshift_Wolf_Buff", new Vector2(-0.25f, 4.3f) },
+        { "AB_Shapeshift_Wolf_Skin01_Buff", new Vector2(-0.25f, 4.3f) }
+    };
 
     private static float ZoomOffset = 2;
 
+    private static ToggleOption EnabledOption;
     private static ToggleOption InvertYOption;
+    private static ToggleOption AlwaysShowCrosshairOption;
     private static ToggleOption ActionModeCrosshairOption;
+    private static ToggleOption FirstPersonEnabledOption;
+    private static ToggleOption DefaultBuildModeOption;
+    private static ToggleOption ThirdPersonRoofOption;
+
+    private static DropdownOption CameraAimModeOption;
+    private static SliderOption AimOffsetXOption;
+    private static SliderOption AimOffsetYOption;
 
     private static ToggleOption LockCameraZoomOption;
     private static SliderOption LockCameraZoomDistanceOption;
@@ -51,16 +78,11 @@ internal static class Settings
     private static SliderOption MinPitchOption;
     private static SliderOption MaxPitchOption;
 
-    private static ToggleOption FirstPersonEnabledOption;
-    private static ToggleOption DefaultBuildModeOption;
-    private static ToggleOption ThirdPersonRoofOption;
-
     private static ToggleOption OverTheShoulderOption;
     private static SliderOption OverTheShoulderXOption;
     private static SliderOption OverTheShoulderYOption;
 
-    private static DropdownOption CameraAimModeOption;
-
+    private static Keybinding EnabledKeybind;
     private static Keybinding ActionModeKeybind;
 
     internal static void Init()
@@ -69,31 +91,40 @@ internal static class Settings
         SetupKeybinds();
     }
 
+    internal static void AddEnabledListener(Action<bool> action) => EnabledOption.AddListener(action);
+
     private static void SetupOptions()
     {
         var category = OptionsManager.AddCategory("Modern Camera");
+        EnabledOption = category.AddToggle("moderncamera.enabled", "Enabled", true);
         InvertYOption = category.AddToggle("moderncamera.inverty", "Invert Y", false);
-        ActionModeCrosshairOption = category.AddToggle("moderncamera.actionmodecrosshair", "Action Mode Crosshair", false);
-
-        MinZoomOption = category.AddSlider("moderncamera.minzoom", "Third Person Min Zoom", 1, 18, 2);
-        MaxZoomOption = category.AddSlider("moderncamera.maxzoom", "Third Person Max Zoom", 3, 20, 18);
-        LockCameraZoomOption = category.AddToggle("moderncamera.lockzoom", "Lock Third Person Camera Zoom", false);
-        LockCameraZoomDistanceOption = category.AddSlider("moderncamera.lockzoomdistance", "Lock Third Person Camera Zoom Distance", 1, 20, 15);
-
-        LockCameraPitchOption = category.AddToggle("moderncamera.lockpitch", "Lock Camera Pitch", false);
-        LockCameraPitchAngleOption = category.AddSlider("moderncamera.lockpitchangle", "Lock Camera Pitch Angle", 0, 90, 60);
-        MinPitchOption = category.AddSlider("moderncamera.minpitch", "Third Person Min Pitch", 0, 90, 9);
-        MaxPitchOption = category.AddSlider("moderncamera.maxpitch", "Third Person Max Pitch", 0, 90, 90);
-
+        AlwaysShowCrosshairOption = category.AddToggle("moderncamera.alwaysshowcrosshair", "Always show Crosshair", false);
+        ActionModeCrosshairOption = category.AddToggle("moderncamera.actionmodecrosshair", "Show Crosshair in Action Mode", false);
         FirstPersonEnabledOption = category.AddToggle("moderncamera.firstperson", "Enable First Person", true);
-        DefaultBuildModeOption = category.AddToggle("moderncamera.defaultbuildmode", "Default Build Mode Camera", true);
-        ThirdPersonRoofOption = category.AddToggle("moderncamera.thirdpersonroof", "Castle Roof in Third Person", false);
+        DefaultBuildModeOption = category.AddToggle("moderncamera.defaultbuildmode", "Use Default Build Mode Camera", true);
+        ThirdPersonRoofOption = category.AddToggle("moderncamera.thirdpersonroof", "Show Castle Roof in Third Person", false);
 
-        OverTheShoulderOption = category.AddToggle("moderncamera.overtheshoulder", "Use Over the Shoulder Offset", false);
-        OverTheShoulderXOption = category.AddSlider("moderncamera.overtheshoulderx", "Over the Shoulder X Offset", 0.5f, 2, 0.8f);
-        OverTheShoulderYOption = category.AddSlider("moderncamera.overtheshouldery", "Over the Shoulder Y Offset", 0.9f, 2, 0.9f);
-
+        category.AddDivider("Third Person Aiming");
         CameraAimModeOption = category.AddDropdown("moderncamera.aimmode", "Aim Mode", (int)CameraAimMode.Default, Enum.GetNames(typeof(CameraAimMode)));
+        AimOffsetXOption = category.AddSlider("moderncamera.aimoffsetx", "Screen X% Offset ", -25, 25, 0);
+        AimOffsetYOption = category.AddSlider("moderncamera.aimoffsety", "Screen Y% Offset", -25, 25, 0);
+
+        category.AddDivider("Third Person Zoom");
+        MinZoomOption = category.AddSlider("moderncamera.minzoom", "Min Zoom", 1, 18, 2);
+        MaxZoomOption = category.AddSlider("moderncamera.maxzoom", "Max Zoom", 3, 20, 18);
+        LockCameraZoomOption = category.AddToggle("moderncamera.lockzoom", "Lock Camera Zoom", false);
+        LockCameraZoomDistanceOption = category.AddSlider("moderncamera.lockzoomdistance", "Locked Camera Zoom Distance", 6, 20, 15);
+
+        category.AddDivider("Third Person Pitch");
+        MinPitchOption = category.AddSlider("moderncamera.minpitch", "Min Pitch", 0, 90, 9);
+        MaxPitchOption = category.AddSlider("moderncamera.maxpitch", "Max Pitch", 0, 90, 90);
+        LockCameraPitchOption = category.AddToggle("moderncamera.lockpitch", "Lock Camera Pitch", false);
+        LockCameraPitchAngleOption = category.AddSlider("moderncamera.lockpitchangle", "Locked Camera Pitch Angle", 0, 90, 60);
+
+        category.AddDivider("Over the Shoulder");
+        OverTheShoulderOption = category.AddToggle("moderncamera.overtheshoulder", "Use Over the Shoulder Offset", false);
+        OverTheShoulderXOption = category.AddSlider("moderncamera.overtheshoulderx", "X Offset", 0.5f, 4, 1);
+        OverTheShoulderYOption = category.AddSlider("moderncamera.overtheshouldery", "Y Offset", 1, 8, 1);
 
         MinZoomOption.AddListener(value =>
         {
@@ -131,10 +162,14 @@ internal static class Settings
     private static void SetupKeybinds()
     {
         var category = KeybindingsManager.AddCategory("Modern Camera");
+
+        EnabledKeybind = category.AddKeyBinding("moderncamera.enabled", "Enabled");
+        EnabledKeybind.AddKeyDownListener(() => EnabledOption.SetValue(!Enabled));
+
         ActionModeKeybind = category.AddKeyBinding("moderncamera.actionmode", "Action Mode");
         ActionModeKeybind.AddKeyDownListener(() =>
         {
-            if (!ModernCameraState.IsFirstPerson)
+            if (Settings.Enabled && !ModernCameraState.IsFirstPerson)
             {
                 ModernCameraState.IsMouseLocked = !ModernCameraState.IsMouseLocked;
                 ModernCameraState.IsActionMode = !ModernCameraState.IsActionMode;
