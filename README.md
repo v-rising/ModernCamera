@@ -53,7 +53,7 @@ Submit a ticket on [GitHub](https://github.com/v-rising/ModernCamera/issues)
 - Kunogi: `@牧瀬紅莉栖#1570` on Discord
 
 ### Changelog
-`1.3.2`
+`1.4.0`
 - Added option and keybind for enabling/disabling ModernCamera
 - Added options for third person aiming offsets
 - Added option to always show cursor
