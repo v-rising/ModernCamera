@@ -1,5 +1,5 @@
 # ModernCamera
-Makes the camera more like a mmo camera and removes the limits.
+Makes the camera more like an action MMO camera
 
 <details>
 <summary>Examples</summary>
@@ -10,19 +10,24 @@ Makes the camera more like a mmo camera and removes the limits.
 </details>
 
 ### Features
+- Option and keybinding to enable/disable ModernCamera
 - Option to invert Y axis
-- Option to enable first person view
-- Option to use default build mode camera
+- Option to use default build mode camera settings
+- Option to always show a crosshair
 - First person view
-    - Alway show interior castle roof
-    - Alway lock camera rotation
+    - Option to enable/disable first person view
+    - Alway shows interior castle roof
+    - Alway locks camera rotation
+    - Offsets camera height when shapeshifted
 - Third person view
     - Keybinding for action mode to lock camera rotation
     - Option for crosshair in action mode
-    - Options to adjust min and max pitch angles
     - Option to lock pitch angle
     - Option to lock zoom distance
-    - Option for over the shoulder offset
+    - Options to adjust min/max pitch angles
+    - Options to adjust min/max zoom
+    - Option for over the shoulder offsets
+    - Option for aiming offsets
     - Option to show interior castle roof
     - Option to lock aim mode forward
 
@@ -35,22 +40,36 @@ Makes the camera more like a mmo camera and removes the limits.
 All configuration is done with the in game options menu
 
 ### Known Issues
-- Zooming in to far causes some world space UI elements to become fully transparent
-- Target info bar (top center) is always visible for player when locked in third person view
-- After V Blood feeding it will always place you in third person view
-- Exiting build mode will always place you in third person view
+- Shadows flicker when looking directly horizontal
 
 ### Support
 Join the [modding community](https://dev.il.gy) for support and tag `@iZastic#0365` or `@Dimentox#1154`
 
-Submit a tickat on [GitHub](https://github.com/v-rising/ModernCamera/issues)
+Submit a ticket on [GitHub](https://github.com/v-rising/ModernCamera/issues)
 
 ###  Contributors
-- Kunogi: `@牧瀬紅莉栖#1570` on Discord
-- Dimentox: `@Dimentox#1154` on Discord
 - iZastic: `@iZastic#0365` on Discord
+- Dimentox: `@Dimentox#1154` on Discord
+- Kunogi: `@牧瀬紅莉栖#1570` on Discord
 
 ### Changelog
+`1.4.0`
+- Added option and keybind for enabling/disabling ModernCamera
+- Added options for third person aiming offsets
+- Added option to always show cursor
+- Added first person offsets when shapeshifted
+- Added shapeshifted and mounted detection for offsetting camera
+- Added public method to enabled/disable ModernCamera (devs, ModernCamera.Enable(bool))
+- Added public method to enabled/disable ActionMode (devs, ModernCamera.ActionMode(bool))
+- Disabled ZoomModifierSystem
+    - Fix crashing when MaxZoom is to low
+    - Fix interference with ModernCamera zooming
+- Fixed bug when zooming in/out of first person mode
+- Fixed zoom bug after mounting a horse
+- Fix world space UI disappearing when zoomed in
+
+<details>
+
 `1.3.1`
 - Fixed conflict with Wetstone
 - Fixed bug when trying to leave first person
@@ -58,8 +77,6 @@ Submit a tickat on [GitHub](https://github.com/v-rising/ModernCamera/issues)
 - Added options for over the shoulder offsets
 - Added option for crosshair in action mode
 - Added option to lock zoom
-
-<details>
 
 `1.3.0`
 - Added all config options to the in game options menu

@@ -1,8 +1,8 @@
 ﻿using BepInEx;
 using BepInEx.IL2CPP;
-using BepInEx.Logging;
 using HarmonyLib;
 using ModernCamera.Hooks;
+using Silkworm.Utils;
 using UnhollowerRuntimeLib;
 
 namespace ModernCamera;
@@ -12,14 +12,11 @@ namespace ModernCamera;
 [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
 public class Plugin : BasePlugin
 {
-    internal static ManualLogSource Logger;
-
     private static Harmony Harmony;
 
     public override void Load()
     {
-        Logger = Log;
-
+        LogUtils.Init(Log);
         Settings.Init();
 
         ClassInjector.RegisterTypeInIl2Cpp<ModernCamera>();
@@ -30,7 +27,7 @@ public class Plugin : BasePlugin
         Harmony = new Harmony(PluginInfo.PLUGIN_GUID);
         Harmony.PatchAll();
 
-        Log.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} v{PluginInfo.PLUGIN_VERSION} is loaded!");
+        LogUtils.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} v{PluginInfo.PLUGIN_VERSION} is loaded!");
     }
 
     public override bool Unload()

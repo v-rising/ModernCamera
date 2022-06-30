@@ -6,17 +6,14 @@ namespace ModernCamera.Behaviours;
 
 internal abstract class CameraBehaviour
 {
-    internal TopdownCameraSystem CameraSystem;
     internal BehaviourType BehaviourType;
-    internal ZoomSettings BuildModeZoomSettings;
     internal float DefaultMaxPitch;
     internal float DefaultMinPitch;
-    internal bool ProbablyShapeshiftedOrMounted;
     internal bool Active;
 
-    protected bool InBuildMode;
-    protected bool IsBuildSettingsSet;
-    protected float TargetZoom = Settings.MaxZoom / 2;
+    protected static float TargetZoom = Settings.MaxZoom / 2;
+    protected static ZoomSettings BuildModeZoomSettings;
+    protected static bool IsBuildSettingsSet;
 
     internal virtual void Activate(ref TopdownCameraState state)
     {
@@ -39,16 +36,23 @@ internal abstract class CameraBehaviour
 
         // Manually manage camera zoom
         var zoomVal = inputState.GetAnalogValue(AnalogInput.ZoomCamera);
-        if (zoomVal != 0 && (!InBuildMode || !Settings.DefaultBuildMode))
+        if (zoomVal != 0 && (!ModernCameraState.InBuildMode || !Settings.DefaultBuildMode))
         {
             // Consume zoom input for the camera
-            var zoomChange = inputState.GetAnalogValue(AnalogInput.ZoomCamera) > 0 ? 2 : -2;
+            var zoomAmount = Mathf.Lerp(.25f, 1.5f, Mathf.Max(0, TargetZoom - Settings.MinZoom) / Settings.MaxZoom);
+            var zoomChange = inputState.GetAnalogValue(AnalogInput.ZoomCamera) > 0 ? zoomAmount : -zoomAmount;
+
             if ((TargetZoom > Settings.MinZoom && TargetZoom + zoomChange < Settings.MinZoom) || (ModernCameraState.IsFirstPerson && zoomChange > 0))
                 TargetZoom = Settings.MinZoom;
             else
                 TargetZoom = Mathf.Clamp(TargetZoom + zoomChange, Settings.FirstPersonEnabled ? 0 : Settings.MinZoom, Settings.MaxZoom);
+
             inputState.SetAnalogValue(AnalogInput.ZoomCamera, 0);
         }
+
+        // Update zoom if MaxZoom is changed
+        if (TargetZoom > Settings.MaxZoom)
+            TargetZoom = Settings.MaxZoom;
 
         if (Settings.InvertY)
             inputState.SetAnalogValue(AnalogInput.RotateCameraY, -inputState.GetAnalogValue(AnalogInput.RotateCameraY));
@@ -56,7 +60,7 @@ internal abstract class CameraBehaviour
 
     internal virtual void UpdateCameraInputs(ref TopdownCameraState state, ref TopdownCamera data)
     {
-        InBuildMode = state.InBuildMode;
+        ModernCameraState.InBuildMode = state.InBuildMode;
         if (!IsBuildSettingsSet)
         {
             BuildModeZoomSettings = data.BuildModeZoomSettings;
@@ -76,6 +80,7 @@ internal abstract class CameraBehaviour
             state.Target.Zoom = TargetZoom;
         }
 
+        // Use default build mode zoom
         if (state.InBuildMode && Settings.DefaultBuildMode)
         {
             data.BuildModeZoomSettings = BuildModeZoomSettings;

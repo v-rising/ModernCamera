@@ -19,7 +19,7 @@ internal class FirstPersonCameraBehaviour : CameraBehaviour
         ModernCameraState.IsMouseLocked = true;
         ModernCameraState.IsFirstPerson = true;
         ModernCameraState.CurrentBehaviourType = BehaviourType;
-        state.PitchPercent = 0.5f;
+        state.PitchPercent = 0.51f;
         TargetZoom = 0;
     }
 
@@ -34,14 +34,23 @@ internal class FirstPersonCameraBehaviour : CameraBehaviour
 
     internal override bool ShouldActivate(ref TopdownCameraState state)
     {
-        return Settings.FirstPersonEnabled && ModernCameraState.CurrentBehaviourType != BehaviourType && state.Target.Zoom < Settings.MinZoom;
+        return Settings.FirstPersonEnabled && ModernCameraState.CurrentBehaviourType != BehaviourType && TargetZoom < Settings.MinZoom;
     }
 
     internal override void UpdateCameraInputs(ref TopdownCameraState state, ref TopdownCamera data)
     {
         base.UpdateCameraInputs(ref state, ref data);
 
-        state.LastTarget.NormalizedLookAtOffset.z = Settings.FirstPersonForwardOffset;
-        state.LastTarget.NormalizedLookAtOffset.y = Settings.HeadHeightOffset;
+        var forwardOffset = Settings.FirstPersonForwardOffset;
+        var headHeight = Settings.HeadHeightOffset;
+
+        if (Settings.FirstPersonShapeshiftOffsets.ContainsKey(ModernCameraState.ShapeshiftName))
+        {
+            forwardOffset = Settings.FirstPersonShapeshiftOffsets[ModernCameraState.ShapeshiftName].y;
+            headHeight = Settings.FirstPersonShapeshiftOffsets[ModernCameraState.ShapeshiftName].x;
+        }
+
+        state.LastTarget.NormalizedLookAtOffset.z = forwardOffset;
+        state.LastTarget.NormalizedLookAtOffset.y = ModernCameraState.IsMounted ? headHeight + Settings.MountedOffset : headHeight;
     }
 }

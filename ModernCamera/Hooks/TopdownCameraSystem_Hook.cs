@@ -10,25 +10,30 @@ namespace ModernCamera.Hooks;
 internal static class TopdownCameraSystem_Hook
 {
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate void UpdateCameraInputs(IntPtr _this, TopdownCameraState* cameraState, TopdownCamera* cameraData);
-    private static UpdateCameraInputs? UpdateCameraInputsOriginal;
-    private static FastNativeDetour? UpdateCameraInputsDetour;
-
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     private unsafe delegate void HandleInput(IntPtr _this, InputState* inputState);
     private static HandleInput? HandleInputOriginal;
     private static FastNativeDetour? HandleInputDetour;
 
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    private unsafe delegate void UpdateCameraInputs(IntPtr _this, TopdownCameraState* cameraState, TopdownCamera* cameraData);
+    private static UpdateCameraInputs? UpdateCameraInputsOriginal;
+    private static FastNativeDetour? UpdateCameraInputsDetour;
+
+    private static bool DefaultZoomSettingsSaved;
+    private static bool UsingDefaultZoomSettings;
+    private static ZoomSettings DefaultZoomSettings;
+    private static ZoomSettings DefaultStandardZoomSettings;
+
     internal static unsafe void CreateAndApply()
     {
-        if (UpdateCameraInputsDetour == null)
-        {
-            UpdateCameraInputsDetour = DetourUtils.Create(typeof(TopdownCameraSystem), "UpdateCameraInputs", "OriginalLambdaBody", UpdateCameraInputsHook, out UpdateCameraInputsOriginal);
-        }
-
         if (HandleInputDetour == null)
         {
             HandleInputDetour = DetourUtils.Create(typeof(TopdownCameraSystem), "HandleInput", HandleInputHook, out HandleInputOriginal);
+        }
+
+        if (UpdateCameraInputsDetour == null)
+        {
+            UpdateCameraInputsDetour = DetourUtils.Create(typeof(TopdownCameraSystem), "UpdateCameraInputs", "OriginalLambdaBody", UpdateCameraInputsHook, out UpdateCameraInputsOriginal);
         }
     }
 
@@ -40,43 +45,55 @@ internal static class TopdownCameraSystem_Hook
 
     private static unsafe void HandleInputHook(IntPtr _this, InputState* inputState)
     {
-        ModernCameraState.CurrentCameraBehaviour!.HandleInput(ref *inputState);
+        if (Settings.Enabled)
+        {
+            ModernCameraState.CurrentCameraBehaviour!.HandleInput(ref *inputState);
+        }
 
         HandleInputOriginal!(_this, inputState);
     }
 
     private static unsafe void UpdateCameraInputsHook(IntPtr _this, TopdownCameraState* cameraState, TopdownCamera* cameraData)
     {
-        ModernCameraState.CurrentCameraBehaviour!.ProbablyShapeshiftedOrMounted = cameraState->ZoomSettings.MinZoom > 0;
-
-        // Set zoom settings
-        cameraState->ZoomSettings.MaxZoom = Settings.MaxZoom;
-        cameraState->ZoomSettings.MinZoom = 0f;
-
-        // Check camera behaviours for activation
-        foreach (var behaviour in ModernCameraState.CameraBehaviours.Values)
+        if (Settings.Enabled)
         {
-            if (behaviour.ShouldActivate(ref *cameraState))
+            if (!DefaultZoomSettingsSaved)
             {
-                ModernCameraState.CurrentCameraBehaviour!.Deactivate();
-                behaviour.CameraSystem = new TopdownCameraSystem(_this);
-                behaviour.Activate(ref *cameraState);
-                break;
+                DefaultZoomSettings = cameraState->ZoomSettings;
+                DefaultStandardZoomSettings = cameraData->StandardZoomSettings;
+                DefaultZoomSettingsSaved = true;
             }
-        }
+            UsingDefaultZoomSettings = false;
 
-        // Update current camera behaviour
-        if (ModernCameraState.CurrentCameraBehaviour != null)
+            // Set zoom settings
+            cameraState->ZoomSettings.MaxZoom = Settings.MaxZoom;
+            cameraState->ZoomSettings.MinZoom = 0f;
+
+            // Check camera behaviours for activation
+            foreach (var behaviour in ModernCameraState.CameraBehaviours.Values)
+            {
+                if (behaviour.ShouldActivate(ref *cameraState))
+                {
+                    ModernCameraState.CurrentCameraBehaviour!.Deactivate();
+                    behaviour.Activate(ref *cameraState);
+                    break;
+                }
+            }
+
+            // Update current camera behaviour
+            if (!ModernCameraState.CurrentCameraBehaviour!.Active)
+                ModernCameraState.CurrentCameraBehaviour!.Activate(ref *cameraState);
+
+            ModernCameraState.CurrentCameraBehaviour!.UpdateCameraInputs(ref *cameraState, ref *cameraData);
+
+            cameraData->StandardZoomSettings = cameraState->ZoomSettings;
+        }
+        else if (DefaultZoomSettingsSaved && !UsingDefaultZoomSettings)
         {
-            ModernCameraState.CurrentCameraBehaviour.CameraSystem = new TopdownCameraSystem(_this);
-
-            if (!ModernCameraState.CurrentCameraBehaviour.Active)
-                ModernCameraState.CurrentCameraBehaviour.Activate(ref *cameraState);
-            
-            ModernCameraState.CurrentCameraBehaviour.UpdateCameraInputs(ref *cameraState, ref *cameraData);
+            cameraState->ZoomSettings = DefaultZoomSettings;
+            cameraData->StandardZoomSettings = DefaultStandardZoomSettings;
+            UsingDefaultZoomSettings = true;
         }
-
-        cameraData->StandardZoomSettings = cameraState->ZoomSettings;
 
         UpdateCameraInputsOriginal!(_this, cameraState, cameraData);
     }

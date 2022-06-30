@@ -10,6 +10,7 @@ internal static class FadeOutUpperRoomPartsSystem_Patch
     [HarmonyPatch(typeof(FadeOutUpperRoomPartsSystem), nameof(FadeOutUpperRoomPartsSystem.OnUpdate))]
     private static void OnUpdate(FadeOutUpperRoomPartsSystem __instance)
     {
+        if (!Settings.Enabled) return;
         if (ModernCameraState.IsFirstPerson || Settings.ThirdPersonRoof)
             __instance.SetFadeOutMode(FadeOutModeEnum.None);
         else

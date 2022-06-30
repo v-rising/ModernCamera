@@ -6,6 +6,8 @@ namespace ModernCamera.Behaviours;
 
 internal class ThirdPersonCameraBehaviour : CameraBehaviour
 {
+    private float LastPitchPercent = float.PositiveInfinity;
+
     internal ThirdPersonCameraBehaviour()
     {
         BehaviourType = BehaviourType.ThirdPerson;
@@ -21,12 +23,12 @@ internal class ThirdPersonCameraBehaviour : CameraBehaviour
             TargetZoom = Settings.MinZoom;
 
         ModernCameraState.CurrentBehaviourType = BehaviourType;
-        state.PitchPercent = 0.5f;
+        state.PitchPercent = LastPitchPercent == float.PositiveInfinity ? 0.5f : LastPitchPercent;
     }
 
     internal override bool ShouldActivate(ref TopdownCameraState state)
     {
-        return ModernCameraState.CurrentBehaviourType != BehaviourType && state.Target.Zoom > state.ZoomSettings.MinZoom;
+        return ModernCameraState.CurrentBehaviourType != BehaviourType && TargetZoom > 0;
     }
 
     internal override void HandleInput(ref InputState inputState)
@@ -44,13 +46,14 @@ internal class ThirdPersonCameraBehaviour : CameraBehaviour
 
         base.UpdateCameraInputs(ref state, ref data);
 
-        state.LastTarget.NormalizedLookAtOffset.y = Settings.HeadHeightOffset;
-        if (Settings.OverTheShoulder && !ProbablyShapeshiftedOrMounted)
+        state.LastTarget.NormalizedLookAtOffset.y = ModernCameraState.IsMounted ? Settings.HeadHeightOffset + Settings.MountedOffset : Settings.HeadHeightOffset;
+        if (Settings.OverTheShoulder && !ModernCameraState.IsShapeshifted && !ModernCameraState.IsMounted)
         {
-            state.LastTarget.NormalizedLookAtOffset.x = Mathf.Lerp(Settings.OverTheShoulderX, 0, state.Current.Zoom / state.ZoomSettings.MaxZoom);
-            state.LastTarget.NormalizedLookAtOffset.y = Mathf.Lerp(Settings.OverTheShoulderY, 0, state.Current.Zoom / state.ZoomSettings.MaxZoom);
+            float lerpValue = Mathf.Max(0, state.Current.Zoom - state.ZoomSettings.MinZoom) / state.ZoomSettings.MaxZoom;
+            state.LastTarget.NormalizedLookAtOffset.x = Mathf.Lerp(Settings.OverTheShoulderX, 0, lerpValue);
+            state.LastTarget.NormalizedLookAtOffset.y = Mathf.Lerp(Settings.OverTheShoulderY, 0, lerpValue);
         }
-    
+
         if (Settings.LockPitch && (!state.InBuildMode || !Settings.DefaultBuildMode))
         {
             state.ZoomSettings.MaxPitch = Settings.LockPitchAngle;
@@ -58,5 +61,7 @@ internal class ThirdPersonCameraBehaviour : CameraBehaviour
             data.BuildModeZoomSettings.MaxPitch = Settings.LockPitchAngle;
             data.BuildModeZoomSettings.MinPitch = Settings.LockPitchAngle;
         }
+
+        LastPitchPercent = state.PitchPercent;
     }
 }

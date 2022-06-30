@@ -6,14 +6,27 @@ namespace ModernCamera.Utils;
 
 internal static class Window
 {
+    internal static IntPtr Handle;
+
     [DllImport("user32.dll", CharSet = CharSet.Auto)]
-    static extern IntPtr FindWindow(string strClassName, string strWindowName);
+    private static extern IntPtr FindWindow(string strClassName, string strWindowName);
 
     [DllImport("user32.dll")]
-    static extern bool GetWindowRect(IntPtr hwnd, ref RECT rectangle);
+    private static extern bool GetWindowRect(IntPtr hwnd, ref RECT rectangle);
 
     [DllImport("user32.dll")]
-    static extern bool GetClientRect(IntPtr hwnd, ref RECT rectangle);
+    private static extern bool GetClientRect(IntPtr hwnd, ref RECT rectangle);
+
+    [DllImport("user32.dll")]
+    private static extern bool ClientToScreen(IntPtr hwnd, ref POINT point);
+
+    [DllImport("user32.dll")]
+    private static extern bool ScreenToClient(IntPtr hwnd, ref POINT point);
+
+    static Window()
+    {
+        Handle = GetWindow("VRising");
+    }
 
     public static IntPtr GetWindow(string title)
     {
@@ -23,14 +36,38 @@ internal static class Window
     public static RECT GetWindowRect()
     {
         var rect = new RECT();
-        GetWindowRect(ModernCameraState.Gamehandle, ref rect);
+        GetWindowRect(Handle, ref rect);
         return rect;
     }
 
     public static RECT GetClientRect()
     {
         var rect = new RECT();
-        GetClientRect(ModernCameraState.Gamehandle, ref rect);
+        GetClientRect(Handle, ref rect);
         return rect;
+    }
+
+    public static POINT ClientToScreen(int x, int y)
+    {
+        var point = new POINT(x, y);
+        ClientToScreen(Handle, ref point);
+        return point;
+    }
+
+    public static POINT ClientToScreen(POINT point)
+    {
+        return ClientToScreen(point.X, point.Y);
+    }
+
+    public static POINT ScreenToClient(int x, int y)
+    {
+        var point = new POINT(x, y);
+        ClientToScreen(Handle, ref point);
+        return point;
+    }
+
+    public static POINT ScreenToClient(POINT point)
+    {
+        return ScreenToClient(point.X, point.Y);
     }
 }
