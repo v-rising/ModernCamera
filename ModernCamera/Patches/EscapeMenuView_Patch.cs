@@ -18,7 +18,6 @@ internal class EscapeMenuView_Patch
     [HarmonyPatch(typeof(EscapeMenuView), nameof(EscapeMenuView.OnButtonClick_LeaveGame))]
     private static void OnButtonClick_LeaveGame()
     {
-        ModernCameraState.IsMouseLocked = false;
-        ModernCameraState.IsMenuOpen = false;
+        ModernCameraState.Reset();
     }
 }

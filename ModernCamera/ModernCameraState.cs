@@ -40,4 +40,15 @@ internal static class ModernCameraState
     {
         CameraBehaviours.Add(behaviour.BehaviourType, behaviour);
     }
+
+    internal static void Reset()
+    {
+        IsFirstPerson = false;
+        IsActionMode = false;
+        IsMouseLocked = false;
+        IsShapeshifted = false;
+        IsMounted = false;
+        InBuildMode = false;
+        ShapeshiftName = "";
+    }
 }
