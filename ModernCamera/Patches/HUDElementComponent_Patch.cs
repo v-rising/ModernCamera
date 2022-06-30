@@ -11,8 +11,10 @@ internal static class HUDElementComponent_Patch
     [HarmonyPatch(typeof(HUDElementComponent), nameof(HUDElementComponent.UpdateVisibility))]
     private static void UpdateVisibility(HUDElementComponent __instance)
     {
-        var canvasGroup = __instance.GetComponentInChildren<CanvasGroup>();
-        if (canvasGroup != null)
-            canvasGroup.alpha = 1f;
+        if (__instance.gameObject.name.Equals("CharacterHUDsParent"))
+        {
+            foreach (var canvasGroup in __instance.GetComponentsInChildren<CanvasGroup>())
+                canvasGroup.alpha = 1f;
+        }
     }
 }
