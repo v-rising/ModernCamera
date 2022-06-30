@@ -81,6 +81,8 @@ public class ModernCamera : MonoBehaviour
         try
         {
             var cursorData = CursorController._CursorDatas.First(x => x.CursorType == CursorType.Game_Normal);
+            if (cursorData == null) return;
+
             CrosshairPrefab = new GameObject("Crosshair");
             CrosshairPrefab.active = false;
             CrosshairPrefab.AddComponent<CanvasRenderer>();
@@ -93,7 +95,8 @@ public class ModernCamera : MonoBehaviour
             rectTransform.localScale = new Vector3(1.2f, 1.2f, 1.2f);
             rectTransform.localPosition = new Vector3(0, 0, 0);
             var image = CrosshairPrefab.AddComponent<Image>();
-            image.overrideSprite = Sprite.Create(cursorData.Texture, new Rect(0, 0, cursorData.Texture.width, cursorData.Texture.height), new Vector2(0.5f, 0.5f), 100f);
+            image.sprite = Sprite.Create(cursorData.Texture, new Rect(0, 0, cursorData.Texture.width, cursorData.Texture.height), new Vector2(0.5f, 0.5f), 100f);
+            CrosshairPrefab.active = false;
         }
         catch (Exception ex)
         {
@@ -170,13 +173,14 @@ public class ModernCamera : MonoBehaviour
     {
         try
         {
-            if (Crosshair == null)
+            if (Crosshair == null && CrosshairPrefab != null)
             {
                 var uiCanvas = GameObject.Find("HUDCanvas(Clone)/Canvas");
                 if (uiCanvas != null)
                 {
                     CanvasScaler = uiCanvas.GetComponent<CanvasScaler>();
-                    Crosshair = Instantiate(CrosshairPrefab, transform);
+                    Crosshair = Instantiate(CrosshairPrefab, uiCanvas.transform);
+                    Crosshair.active = true;
                 }
             }
 
