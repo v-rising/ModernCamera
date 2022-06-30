@@ -40,7 +40,7 @@ Makes the camera more like an action MMO camera
 All configuration is done with the in game options menu
 
 ### Known Issues
-- Shadows flicker when looking directly horizontal
+- Shadows flicker when looking directly horizontal (Due to fake cloud shadows)
 
 ### Support
 Join the [modding community](https://dev.il.gy) for support and tag `@iZastic#0365` or `@Dimentox#1154`
@@ -53,6 +53,12 @@ Submit a ticket on [GitHub](https://github.com/v-rising/ModernCamera/issues)
 - Kunogi: `@牧瀬紅莉栖#1570` on Discord
 
 ### Changelog
+`1.4.1`
+- Fixed no fading of wrong UI elements (like chat)
+- Fixed bug causing game to crash when leaving game
+
+<details>
+
 `1.4.0`
 - Added option and keybind for enabling/disabling ModernCamera
 - Added options for third person aiming offsets
@@ -67,8 +73,6 @@ Submit a ticket on [GitHub](https://github.com/v-rising/ModernCamera/issues)
 - Fixed bug when zooming in/out of first person mode
 - Fixed zoom bug after mounting a horse
 - Fix world space UI disappearing when zoomed in
-
-<details>
 
 `1.3.1`
 - Fixed conflict with Wetstone
