@@ -14,7 +14,6 @@ internal static class Window
     [DllImport("user32.dll")]
     private static extern bool GetWindowRect(IntPtr hwnd, ref RECT rectangle);
 
-    
     [DllImport("user32.dll")]
     private static extern bool GetClientRect(IntPtr hwnd, ref RECT rectangle);
 

@@ -1,7 +1,6 @@
 ﻿using ModernCamera.Enums;
 using ModernCamera.Structs;
 using System.Runtime.InteropServices;
-using UnityEngine;
 
 namespace ModernCamera.Utils;
 

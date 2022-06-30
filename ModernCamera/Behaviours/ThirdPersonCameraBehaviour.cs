@@ -53,7 +53,7 @@ internal class ThirdPersonCameraBehaviour : CameraBehaviour
             state.LastTarget.NormalizedLookAtOffset.x = Mathf.Lerp(Settings.OverTheShoulderX, 0, lerpValue);
             state.LastTarget.NormalizedLookAtOffset.y = Mathf.Lerp(Settings.OverTheShoulderY, 0, lerpValue);
         }
-    
+
         if (Settings.LockPitch && (!state.InBuildMode || !Settings.DefaultBuildMode))
         {
             state.ZoomSettings.MaxPitch = Settings.LockPitchAngle;
