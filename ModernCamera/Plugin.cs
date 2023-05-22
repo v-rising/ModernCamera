@@ -1,9 +1,8 @@
 ﻿using BepInEx;
-using BepInEx.IL2CPP;
+using BepInEx.Unity.IL2CPP;
 using HarmonyLib;
 using ModernCamera.Hooks;
 using Silkworm.Utils;
-using UnhollowerRuntimeLib;
 
 namespace ModernCamera;
 
@@ -19,7 +18,6 @@ public class Plugin : BasePlugin
         LogUtils.Init(Log);
         Settings.Init();
 
-        ClassInjector.RegisterTypeInIl2Cpp<ModernCamera>();
         AddComponent<ModernCamera>();
 
         TopdownCameraSystem_Hook.CreateAndApply();

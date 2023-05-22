@@ -40,24 +40,33 @@ Makes the camera more like an action MMO camera
 All configuration is done with the in game options menu
 
 ### Known Issues
+- Action mode can be enabled/disabled on the main menu
 - Shadows flicker when looking directly horizontal (Due to fake cloud shadows)
 
 ### Support
-Join the [modding community](https://dev.il.gy) for support and tag `@iZastic#0365` or `@Dimentox#1154`
+Join the [modding discord](https://vrisingmods.com/discord) for support and tag `@iZastic#0365`
 
 Submit a ticket on [GitHub](https://github.com/v-rising/ModernCamera/issues)
 
-###  Contributors
+### Contributors
 - iZastic: `@iZastic#0365` on Discord
 - Dimentox: `@Dimentox#1154` on Discord
 - Kunogi: `@牧瀬紅莉栖#1570` on Discord
 
+### Silkworm
+Source code for the Silkworm library [https://github.com/iZastic/vrising-silkworm](https://github.com/iZastic/vrising-silkworm).
+
+I am not officially supporting this as a library for use in other mods, but I wanted to add a link to the source for those who are interested.
+
 ### Changelog
+`1.5.0`
+- Updated for Gloomrot
+
+<details>
+
 `1.4.1`
 - Fixed no fading of wrong UI elements (like chat)
 - Fixed bug causing game to crash when leaving game
-
-<details>
 
 `1.4.0`
 - Added option and keybind for enabling/disabling ModernCamera

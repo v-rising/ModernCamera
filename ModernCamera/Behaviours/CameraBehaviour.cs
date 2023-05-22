@@ -27,11 +27,11 @@ internal abstract class CameraBehaviour
 
     internal virtual bool ShouldActivate(ref TopdownCameraState state) => false;
 
-    internal virtual void HandleInput(ref InputState inputState)
+    internal virtual unsafe void HandleInput(ref InputState inputState)
     {
-        if (ModernCameraState.IsMouseLocked && !ModernCameraState.IsMenuOpen && !inputState.IsInputPressed(InputFlag.RotateCamera))
+        if (inputState.InputsPressed.IsCreated && ModernCameraState.IsMouseLocked && !ModernCameraState.IsMenuOpen && !inputState.IsInputPressed(InputFlag.RotateCamera))
         {
-            inputState.InputsPressed |= InputFlag.RotateCamera;
+            inputState.InputsPressed.m_ListData->Add(InputFlag.RotateCamera);
         }
 
         // Manually manage camera zoom

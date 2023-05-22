@@ -1,4 +1,5 @@
-﻿using BepInEx.IL2CPP.Hook;
+﻿using BepInEx.Unity.IL2CPP.Hook;
+using MonoMod.RuntimeDetour;
 using ProjectM;
 using Silkworm.Utils;
 using System;
@@ -12,12 +13,12 @@ internal static class TopdownCameraSystem_Hook
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     private unsafe delegate void HandleInput(IntPtr _this, InputState* inputState);
     private static HandleInput? HandleInputOriginal;
-    private static FastNativeDetour? HandleInputDetour;
+    private static NativeDetour? HandleInputDetour;
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     private unsafe delegate void UpdateCameraInputs(IntPtr _this, TopdownCameraState* cameraState, TopdownCamera* cameraData);
     private static UpdateCameraInputs? UpdateCameraInputsOriginal;
-    private static FastNativeDetour? UpdateCameraInputsDetour;
+    private static NativeDetour? UpdateCameraInputsDetour;
 
     private static bool DefaultZoomSettingsSaved;
     private static bool UsingDefaultZoomSettings;

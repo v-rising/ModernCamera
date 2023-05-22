@@ -80,6 +80,7 @@ public class ModernCamera : MonoBehaviour
     {
         try
         {
+            if (CursorController._CursorDatas == null) return;
             var cursorData = CursorController._CursorDatas.First(x => x.CursorType == CursorType.Game_Normal);
             if (cursorData == null) return;
 
@@ -137,12 +138,12 @@ public class ModernCamera : MonoBehaviour
                 ModernCameraState.ShapeshiftName = "";
                 foreach (var buff in UIDataSystem.UI.BuffBarParent.BuffsSelectionGroup.Entries)
                 {
-                    if (PrefabCollectionSystem.PrefabNameLookupMap.ContainsKey(buff.PrefabGUID))
+                    if (PrefabCollectionSystem.PrefabGuidToNameDictionary.ContainsKey(buff.PrefabGUID))
                     {
-                        ModernCameraState.IsShapeshifted = PrefabCollectionSystem.PrefabNameLookupMap[buff.PrefabGUID].ToString().Contains("shapeshift", System.StringComparison.OrdinalIgnoreCase);
+                        ModernCameraState.IsShapeshifted = PrefabCollectionSystem.PrefabGuidToNameDictionary[buff.PrefabGUID].ToString().Contains("shapeshift", System.StringComparison.OrdinalIgnoreCase);
                         if (ModernCameraState.IsShapeshifted)
                         {
-                            ModernCameraState.ShapeshiftName = PrefabCollectionSystem.PrefabNameLookupMap[buff.PrefabGUID].ToString().Trim();
+                            ModernCameraState.ShapeshiftName = PrefabCollectionSystem.PrefabGuidToNameDictionary[buff.PrefabGUID].ToString().Trim();
                             break;
                         }
                     }
@@ -154,9 +155,9 @@ public class ModernCamera : MonoBehaviour
                 ModernCameraState.IsMounted = false;
                 foreach (var ability in UIDataSystem.UI.AbilityBar.Entries)
                 {
-                    if (PrefabCollectionSystem.PrefabNameLookupMap.ContainsKey(ability.AbilityId))
+                    if (PrefabCollectionSystem.PrefabGuidToNameDictionary.ContainsKey(ability.AbilityId))
                     {
-                        ModernCameraState.IsMounted = PrefabCollectionSystem.PrefabNameLookupMap[ability.AbilityId].ToString().Contains("mounted", System.StringComparison.OrdinalIgnoreCase);
+                        ModernCameraState.IsMounted = PrefabCollectionSystem.PrefabGuidToNameDictionary[ability.AbilityId].ToString().Contains("mounted", System.StringComparison.OrdinalIgnoreCase);
                         if (ModernCameraState.IsMounted)
                             break;
                     }
