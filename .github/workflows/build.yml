@@ -1,0 +1,64 @@
+name: Build
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: 6.0.x
+
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v0.9.7
+        with:
+          versionSpec: "5.x"
+      
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          path: ./ModernCamera
+
+      - name: Checkout Silkworm
+        uses: actions/checkout@v3
+        with:
+          repository: iZastic/vrising-silkworm
+          path: ./Silkworm
+      
+      - name: Restore dependencies
+        run: dotnet restore
+        working-directory: ./ModernCamera
+
+      - name: Determine Version
+        uses: gittools/actions/gitversion/execute@v0.9.7
+        with:
+          additionalArguments: '/updateprojectfiles /overrideconfig "mode=Mainline"'
+
+      - name: Build (Release)
+        run: dotnet build . --configuration Release --no-restore -p:Version=$GitVersion_SemVer
+        working-directory: ./ModernCamera
+
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v3.1.0
+        with:
+          path: ./package
+
+      - name: GH Release
+        uses: softprops/action-gh-release@v1
+        if: github.event_name == 'push'
+        with:
+          body: Automatic pre-release of ${{ env.GitVersion_SemVer }} for ${{ env.GitVersion_ShortSha }}
+          name: v${{ env.GitVersion_SemVer }}
+          files: ./package/*
+          fail_on_unmatched_files: true
+          prerelease: true
+          tag_name: v${{ env.GitVersion_SemVer }}
