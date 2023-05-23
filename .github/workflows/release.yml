@@ -1,0 +1,66 @@
+name: Build
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+env:
+  SOLUTION_PATH: ModernCamera/ModernCamera.sln
+  PACKAGE_PATH: ModernCamera/package
+  ZIP_PATH: ModernCamera/package/ModernCamera.zip
+
+jobs:
+  build:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout ModernCamera
+      uses: actions/checkout@v3
+      with:
+        path: ./ModernCamera
+      
+    - name: Checkout Silkworm
+      uses: actions/checkout@v3
+      with:
+        path: ./Silkworm
+        repository: iZastic/vrising-silkworm
+
+    - name: Install .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 6.0.x
+    
+    - name: Restore dependencies
+      run: dotnet restore ${{ env.SOLUTION_PATH }}
+
+    - name: Execute unit tests
+      run: dotnet test ${{ env.SOLUTION_PATH }}
+    
+    - name: Build
+      run: dotnet build -c release --no-restore ${{ env.SOLUTION_PATH }}
+      
+    - name: Create Zip File
+      uses: papeloto/action-zip@v1
+      with:
+        files: ${{ env.PACKAGE_PATH }}
+        dest: ${{ env.ZIP_PATH }}
+            
+    - name: Release
+      if: ${{ endsWith(github.ref_name, '-pre') }}
+      uses: softprops/action-gh-release@v0.1.15
+      with:
+        tag_name: ModernCamera-${{ github.ref_name }}
+        prerelease: true
+        body: Automated release of ${{ github.ref_name }}
+        files: ${{ env.ZIP_PATH }}
+
+    - name: Release
+      if: ${{ !endsWith(github.ref_name, '-pre') }}
+      uses: softprops/action-gh-release@v0.1.15
+      with:
+        tag_name: ModernCamera-${{ github.ref_name }}
+        body: Automated release of ${{ github.ref_name }}
+        files: ${{ env.ZIP_PATH }}
