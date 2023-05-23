@@ -27,6 +27,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           path: ./ModernCamera
+          fetch-depth: 0
 
       - name: Checkout Silkworm
         uses: actions/checkout@v3
