@@ -52,7 +52,7 @@ jobs:
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v3.1.0
         with:
-          path: ./package
+          path: ../package/
 
       - name: GH Release
         uses: softprops/action-gh-release@v1
