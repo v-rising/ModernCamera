@@ -43,7 +43,7 @@ jobs:
         uses: gittools/actions/gitversion/execute@v0.9.7
         with:
           additionalArguments: '/updateprojectfiles /overrideconfig "mode=Mainline"'
-          targetPath: '../'
+          targetPath: './ModernCamera'
 
       - name: Build (Release)
         run: dotnet build . --configuration Release --no-restore -p:Version=$GitVersion_SemVer
