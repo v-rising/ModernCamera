@@ -48,21 +48,12 @@ jobs:
       - name: Build (Release)
         run: dotnet build . --configuration Release --no-restore -p:Version=$GitVersion_SemVer
         working-directory: ./ModernCamera
-      
-      - name: List files in current and parent directory
-        run: |
-          echo "Listing files in current directory:"
-          ls -al
-          echo "Listing files in parent directory:"
-          ls -al ..
-          echo "Listing files in moderncamera directory:"
-          ls -al ./ModernCamera
-          echo "Listing files in home directory:"
-          ls -al ~
+
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v3.1.0
         with:
-          path: ../package/
+          path: ./ModernCamera/package/
+          if-no-files-found: error
 
       - name: GH Release
         uses: softprops/action-gh-release@v1
@@ -70,7 +61,7 @@ jobs:
         with:
           body: Automatic pre-release of ${{ env.GitVersion_SemVer }} for ${{ env.GitVersion_ShortSha }}
           name: v${{ env.GitVersion_SemVer }}
-          files: ./package/*
+          files: ./ModernCamera/package/*
           fail_on_unmatched_files: true
           prerelease: true
           tag_name: v${{ env.GitVersion_SemVer }}
