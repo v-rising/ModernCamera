@@ -11,12 +11,12 @@ Makes the camera more like an action MMO camera
 
 ### Features
 - Option and keybinding to enable/disable ModernCamera
-- Option to invert Y axis
 - Option to use default build mode camera settings
 - Option to always show a crosshair
+- Option for field of view
+- Keybinding to hide UI
 - First person view
     - Option to enable/disable first person view
-    - Alway shows interior castle roof
     - Alway locks camera rotation
     - Offsets camera height when shapeshifted
 - Third person view
@@ -28,7 +28,6 @@ Makes the camera more like an action MMO camera
     - Options to adjust min/max zoom
     - Option for over the shoulder offsets
     - Option for aiming offsets
-    - Option to show interior castle roof
     - Option to lock aim mode forward
 
 
