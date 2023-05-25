@@ -79,6 +79,11 @@ I am not officially supporting this as a library for use in other mods, but I wa
 
 
 ### Changelog
+`1.5.2`
+- Fixed issue with invisible interact text when zoomed in
+
+<details>
+
 `1.5.1`
 - Removed InvertY option (this is now supported by the game under Camera Settings)
 - Removed ThirdPersonRoof option (no longer affective)
@@ -86,8 +91,6 @@ I am not officially supporting this as a library for use in other mods, but I wa
 - Added keybind to hide all UI elements
 - Fixed crash after leaving and joining a server
 - Fixed issue where mouse stayed locked after disabling ModernCamera
-
-<details>
 
 `1.5.0`
 - Updated for Gloomrot
