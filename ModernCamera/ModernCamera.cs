@@ -89,7 +89,10 @@ public class ModernCamera : MonoBehaviour
             {
                 var cameraObject = GameObject.Find("Main_GameToolCamera(Clone)");
                 if (cameraObject != null)
+                {
                     GameCamera = cameraObject.GetComponent<Camera>();
+                    UpdateFieldOfView(Settings.FieldOfView);
+                }
             }
 
             if (hudCanvas == null)
