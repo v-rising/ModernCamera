@@ -23,6 +23,9 @@ public class ModernCamera : MonoBehaviour
     private static PrefabCollectionSystem PrefabCollectionSystem;
     private static UIDataSystem UIDataSystem;
 
+    private static GameObject hudCanvas;
+    private static Camera GameCamera;
+
     private static bool GameFocused;
 
     public static void Enabled(bool enabled)
@@ -44,6 +47,22 @@ public class ModernCamera : MonoBehaviour
 
         if (Crosshair != null)
             Crosshair.active = enabled && Settings.AlwaysShowCrosshair && !ModernCameraState.InBuildMode;
+
+        if (!enabled)
+        {
+            Cursor.visible = true;
+            ActionMode(false);
+        }
+    }
+
+    private static void UpdateFieldOfView(float fov)
+    {
+        if (GameCamera != null) GameCamera.fieldOfView = fov;
+    }
+
+    private static void ToggleUI()
+    {
+        if (hudCanvas != null) hudCanvas.SetActive(!hudCanvas.activeInHierarchy);
     }
 
     private void Awake()
@@ -53,6 +72,8 @@ public class ModernCamera : MonoBehaviour
         ModernCameraState.CurrentBehaviourType = BehaviourType.ThirdPerson;
 
         Settings.AddEnabledListener(UpdateEnabled);
+        Settings.AddFieldOfViewListener(UpdateFieldOfView);
+        Settings.AddHideUIListener(ToggleUI);
     }
 
     private void Update()
@@ -64,11 +85,24 @@ public class ModernCamera : MonoBehaviour
 
         if (WorldUtils.ClientWorldExists)
         {
+            if (GameCamera == null)
+            {
+                var cameraObject = GameObject.Find("Main_GameToolCamera(Clone)");
+                if (cameraObject != null)
+                    GameCamera = cameraObject.GetComponent<Camera>();
+            }
+
+            if (hudCanvas == null)
+                hudCanvas = GameObject.Find("HUDCanvas(Clone)");
+
             GatherSystems();
             UpdateSystems();
+            UpdateCrosshair();
         }
-
-        UpdateCrosshair();
+        else
+        {
+            Cursor.visible = true;
+        }
     }
 
     private void OnApplicationFocus(bool hasFocus)
@@ -105,7 +139,7 @@ public class ModernCamera : MonoBehaviour
         }
     }
 
-    public void GatherSystems()
+    private void GatherSystems()
     {
         if (ZoomModifierSystem == null)
         {
@@ -126,7 +160,7 @@ public class ModernCamera : MonoBehaviour
         }
     }
 
-    public void UpdateSystems()
+    private void UpdateSystems()
     {
         if (UIDataSystem == null || PrefabCollectionSystem == null) return;
 
@@ -170,7 +204,7 @@ public class ModernCamera : MonoBehaviour
         }
     }
 
-    public void UpdateCrosshair()
+    private void UpdateCrosshair()
     {
         try
         {

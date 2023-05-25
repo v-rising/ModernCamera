@@ -11,12 +11,11 @@ namespace ModernCamera;
 internal static class Settings
 {
     internal static bool Enabled { get => EnabledOption.Value; set => EnabledOption.SetValue(value); }
-    internal static bool InvertY { get => InvertYOption.Value; set => InvertYOption.SetValue(value); }
-    internal static bool AlwaysShowCrosshair { get => AlwaysShowCrosshairOption.Value; set => AlwaysShowCrosshairOption.SetValue(value); }
-    internal static bool ActionModeCrosshair { get => ActionModeCrosshairOption.Value; set => ActionModeCrosshairOption.SetValue(value); }
     internal static bool FirstPersonEnabled { get => FirstPersonEnabledOption.Value; set => FirstPersonEnabledOption.SetValue(value); }
     internal static bool DefaultBuildMode { get => DefaultBuildModeOption.Value; set => DefaultBuildModeOption.SetValue(value); }
-    internal static bool ThirdPersonRoof { get => ThirdPersonRoofOption.Value; set => ThirdPersonRoofOption.SetValue(value); }
+    internal static bool AlwaysShowCrosshair { get => AlwaysShowCrosshairOption.Value; set => AlwaysShowCrosshairOption.SetValue(value); }
+    internal static bool ActionModeCrosshair { get => ActionModeCrosshairOption.Value; set => ActionModeCrosshairOption.SetValue(value); }
+    internal static float FieldOfView { get => FieldOfViewOption.Value; set => FieldOfViewOption.SetValue(value); }
 
     internal static int AimOffsetX { get => (int)(Screen.width * (AimOffsetXOption.Value / 100)); set => AimOffsetXOption.SetValue(Mathf.Clamp(value / Screen.width, -25, 25)); }
     internal static int AimOffsetY { get => (int)(Screen.height * (AimOffsetYOption.Value / 100)); set => AimOffsetYOption.SetValue(Mathf.Clamp(value / Screen.width, -25, 25)); }
@@ -57,12 +56,11 @@ internal static class Settings
     private static float ZoomOffset = 2;
 
     private static ToggleOption EnabledOption;
-    private static ToggleOption InvertYOption;
+    private static SliderOption FieldOfViewOption;
     private static ToggleOption AlwaysShowCrosshairOption;
     private static ToggleOption ActionModeCrosshairOption;
     private static ToggleOption FirstPersonEnabledOption;
     private static ToggleOption DefaultBuildModeOption;
-    private static ToggleOption ThirdPersonRoofOption;
 
     private static DropdownOption CameraAimModeOption;
     private static SliderOption AimOffsetXOption;
@@ -84,6 +82,7 @@ internal static class Settings
 
     private static Keybinding EnabledKeybind;
     private static Keybinding ActionModeKeybind;
+    private static Keybinding HideUIKeybind;
 
     internal static void Init()
     {
@@ -92,17 +91,18 @@ internal static class Settings
     }
 
     internal static void AddEnabledListener(Action<bool> action) => EnabledOption.AddListener(action);
+    internal static void AddFieldOfViewListener(Action<float> action) => FieldOfViewOption.AddListener(action);
+    internal static void AddHideUIListener(Action action) => HideUIKeybind.AddKeyDownListener(action);
 
     private static void SetupOptions()
     {
         var category = OptionsManager.AddCategory("Modern Camera");
         EnabledOption = category.AddToggle("moderncamera.enabled", "Enabled", true);
-        InvertYOption = category.AddToggle("moderncamera.inverty", "Invert Y", false);
-        AlwaysShowCrosshairOption = category.AddToggle("moderncamera.alwaysshowcrosshair", "Always show Crosshair", false);
-        ActionModeCrosshairOption = category.AddToggle("moderncamera.actionmodecrosshair", "Show Crosshair in Action Mode", false);
         FirstPersonEnabledOption = category.AddToggle("moderncamera.firstperson", "Enable First Person", true);
         DefaultBuildModeOption = category.AddToggle("moderncamera.defaultbuildmode", "Use Default Build Mode Camera", true);
-        ThirdPersonRoofOption = category.AddToggle("moderncamera.thirdpersonroof", "Show Castle Roof in Third Person", false);
+        AlwaysShowCrosshairOption = category.AddToggle("moderncamera.alwaysshowcrosshair", "Always show Crosshair", false);
+        ActionModeCrosshairOption = category.AddToggle("moderncamera.actionmodecrosshair", "Show Crosshair in Action Mode", false);
+        FieldOfViewOption = category.AddSlider("moderncamera.fieldofview", "Field of View", 50, 90, 60);
 
         category.AddDivider("Third Person Aiming");
         CameraAimModeOption = category.AddDropdown("moderncamera.aimmode", "Aim Mode", (int)CameraAimMode.Default, Enum.GetNames(typeof(CameraAimMode)));
@@ -175,5 +175,7 @@ internal static class Settings
                 ModernCameraState.IsActionMode = !ModernCameraState.IsActionMode;
             }
         });
+
+        HideUIKeybind = category.AddKeyBinding("moderncamera.hideui", "Hide UI");
     }
 }

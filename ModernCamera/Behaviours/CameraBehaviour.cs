@@ -53,9 +53,6 @@ internal abstract class CameraBehaviour
         // Update zoom if MaxZoom is changed
         if (TargetZoom > Settings.MaxZoom)
             TargetZoom = Settings.MaxZoom;
-
-        if (Settings.InvertY)
-            inputState.SetAnalogValue(AnalogInput.RotateCameraY, -inputState.GetAnalogValue(AnalogInput.RotateCameraY));
     }
 
     internal virtual void UpdateCameraInputs(ref TopdownCameraState state, ref TopdownCamera data)
