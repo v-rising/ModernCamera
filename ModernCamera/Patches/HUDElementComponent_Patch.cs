@@ -11,7 +11,7 @@ internal static class HUDElementComponent_Patch
     [HarmonyPatch(typeof(HUDElementComponent), nameof(HUDElementComponent.UpdateVisibility))]
     private static void UpdateVisibility(HUDElementComponent __instance)
     {
-        if (__instance.gameObject.name.Equals("CharacterHUDsParent"))
+        if (__instance.gameObject.name.Equals("InteractorEntry(Clone)"))
         {
             foreach (var canvasGroup in __instance.GetComponentsInChildren<CanvasGroup>())
                 canvasGroup.alpha = 1f;
