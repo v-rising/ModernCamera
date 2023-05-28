@@ -1,5 +1,5 @@
 # ModernCamera
-Makes the camera more like an action MMO camera
+Makes the camera more like an action MMO camera. This includes better control over the third person camera and a first person mode. Action mode allows you to toggle camera rotation so you don't have to always hold down the mouse to rotate the camera.
 
 <details>
 <summary>Examples</summary>
@@ -9,26 +9,32 @@ Makes the camera more like an action MMO camera
 </ul>
 </details>
 
+
 ### Features
 - Option and keybinding to enable/disable ModernCamera
-- Option to use default build mode camera settings
+- Option to use default build mode camera
 - Option to always show a crosshair
 - Option for field of view
 - Keybinding to hide UI
 - First person view
-    - Option to enable/disable first person view
+    - Option to enable/disable
     - Alway locks camera rotation
     - Offsets camera height when shapeshifted
 - Third person view
-    - Keybinding for action mode to lock camera rotation
-    - Option for crosshair in action mode
+    - Keybinding for action mode (action mode locks camera rotation)
+    - Option to always show crosshair in action mode
+        - _Helpful when using aimed abilities_
     - Option to lock pitch angle
     - Option to lock zoom distance
     - Options to adjust min/max pitch angles
     - Options to adjust min/max zoom
     - Option for over the shoulder offsets
+        - _Use this to offset the camera. Useful to avoid always showing name/health on top of screen_
     - Option for aiming offsets
+        - _Use this to adjust the aiming reticle position. This is helpful for aimed abilities_
     - Option to lock aim mode forward
+        - _Default: will aim towards mouse when rotating the camera_
+        - _Forward: will always aim forward when rotating the camera_
 
 
 ### Installation
@@ -42,7 +48,7 @@ All configuration is done with the in game options menu
 
 
 ### Known Issues
-- Can see through floors/roofs from below (this cannot be fixed because objects are missing Mesh faces)
+- Can see through floors/roofs from below (this cannot be fixed because objects are missing mesh faces)
 - Shadows flicker when looking directly horizontal (Due to fake cloud shadows)
 
 
@@ -79,10 +85,13 @@ I am not officially supporting this as a library for use in other mods, but I wa
 
 
 ### Changelog
-`1.5.2`
-- Fixed issue with invisible interact text when zoomed in
+`1.5.3`
+- Fixed build mode camera when ModernCamera is disabled
 
 <details>
+
+`1.5.2`
+- Fixed issue with invisible interact text when zoomed in
 
 `1.5.1`
 - Removed InvertY option (this is now supported by the game under Camera Settings)
