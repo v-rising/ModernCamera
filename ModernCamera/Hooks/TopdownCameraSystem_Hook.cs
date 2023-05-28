@@ -23,6 +23,7 @@ internal static class TopdownCameraSystem_Hook
     private static bool UsingDefaultZoomSettings;
     private static ZoomSettings DefaultZoomSettings;
     private static ZoomSettings DefaultStandardZoomSettings;
+    private static ZoomSettings DefaultBuildModeZoomSettings;
 
     internal static unsafe void CreateAndApply()
     {
@@ -61,6 +62,7 @@ internal static class TopdownCameraSystem_Hook
             {
                 DefaultZoomSettings = cameraState.ZoomSettings;
                 DefaultStandardZoomSettings = cameraData.StandardZoomSettings;
+                DefaultBuildModeZoomSettings = cameraData.BuildModeZoomSettings;
                 DefaultZoomSettingsSaved = true;
             }
             UsingDefaultZoomSettings = false;
@@ -92,6 +94,7 @@ internal static class TopdownCameraSystem_Hook
         {
             cameraState.ZoomSettings = DefaultZoomSettings;
             cameraData.StandardZoomSettings = DefaultStandardZoomSettings;
+            cameraData.BuildModeZoomSettings = DefaultBuildModeZoomSettings;
             UsingDefaultZoomSettings = true;
         }
 
