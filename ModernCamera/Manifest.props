@@ -13,7 +13,7 @@
     "website_url": "$(PluginURL)",
     "description": "$(PluginDescription)",
     "dependencies": [
-        "BepInEx-BepInExPack_V_Rising-1.0.0"
+        "BepInEx-BepInExPack_V_Rising-1.668.5"
     ]
 }
      ]]>
