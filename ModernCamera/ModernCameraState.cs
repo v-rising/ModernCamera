@@ -8,6 +8,7 @@ namespace ModernCamera;
 
 internal static class ModernCameraState
 {
+    internal static bool IsUIHidden;
     internal static bool IsFirstPerson;
     internal static bool IsActionMode;
     internal static bool IsMouseLocked;

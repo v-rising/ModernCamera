@@ -1,5 +1,4 @@
-﻿using BepInEx;
-using ModernCamera.Behaviours;
+﻿using ModernCamera.Behaviours;
 using ModernCamera.Enums;
 using ModernCamera.Utils;
 using ProjectM;
@@ -23,7 +22,6 @@ public class ModernCamera : MonoBehaviour
     private static PrefabCollectionSystem PrefabCollectionSystem;
     private static UIDataSystem UIDataSystem;
 
-    private static GameObject hudCanvas;
     private static Camera GameCamera;
 
     private static bool GameFocused;
@@ -62,7 +60,7 @@ public class ModernCamera : MonoBehaviour
 
     private static void ToggleUI()
     {
-        if (hudCanvas != null) hudCanvas.SetActive(!hudCanvas.activeInHierarchy);
+        ModernCameraState.IsUIHidden = !ModernCameraState.IsUIHidden;
     }
 
     private void Awake()
@@ -94,9 +92,6 @@ public class ModernCamera : MonoBehaviour
                     UpdateFieldOfView(Settings.FieldOfView);
                 }
             }
-
-            if (hudCanvas == null)
-                hudCanvas = GameObject.Find("HUDCanvas(Clone)");
 
             GatherSystems();
             UpdateSystems();
@@ -177,11 +172,15 @@ public class ModernCamera : MonoBehaviour
                 {
                     if (PrefabCollectionSystem.PrefabGuidToNameDictionary.ContainsKey(buff.PrefabGUID))
                     {
-                        ModernCameraState.IsShapeshifted = PrefabCollectionSystem.PrefabGuidToNameDictionary[buff.PrefabGUID].ToString().Contains("shapeshift", System.StringComparison.OrdinalIgnoreCase);
+                        ModernCameraState.IsShapeshifted = PrefabCollectionSystem.PrefabGuidToNameDictionary[buff.PrefabGUID].Contains("shapeshift", System.StringComparison.OrdinalIgnoreCase);
                         if (ModernCameraState.IsShapeshifted)
                         {
-                            ModernCameraState.ShapeshiftName = PrefabCollectionSystem.PrefabGuidToNameDictionary[buff.PrefabGUID].ToString().Trim();
-                            break;
+                            var shapeshiftName = PrefabCollectionSystem.PrefabGuidToNameDictionary[buff.PrefabGUID];
+                            if (shapeshiftName != null)
+                            {
+                                ModernCameraState.ShapeshiftName = shapeshiftName.Trim();
+                                break;
+                            }
                         }
                     }
                 }
@@ -194,7 +193,7 @@ public class ModernCamera : MonoBehaviour
                 {
                     if (PrefabCollectionSystem.PrefabGuidToNameDictionary.ContainsKey(ability.AbilityId))
                     {
-                        ModernCameraState.IsMounted = PrefabCollectionSystem.PrefabGuidToNameDictionary[ability.AbilityId].ToString().Contains("mounted", System.StringComparison.OrdinalIgnoreCase);
+                        ModernCameraState.IsMounted = PrefabCollectionSystem.PrefabGuidToNameDictionary[ability.AbilityId].Contains("mounted", System.StringComparison.OrdinalIgnoreCase);
                         if (ModernCameraState.IsMounted)
                             break;
                     }
