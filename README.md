@@ -85,11 +85,16 @@ I am not officially supporting this as a library for use in other mods, but I wa
 
 
 ### Changelog
-`1.5.4`
-- Update how UI is hidden due to StunLock update
-- Possible fix for [#17](https://github.com/v-rising/ModernCamera/issues/17) when zooming in to first person
+`1.5.5`
+- Fixed first person offset bug after leaving and joining game
+- Fixed errors with first person camera zoom after leaving and joining game
+- Fixed crash from cursor input check after leaving and joining game
 
 <details>
+
+`1.5.4`
+- Update how UI is hidden due to Stunlock update
+- Possible fix for [#17](https://github.com/v-rising/ModernCamera/issues/17) when zooming in to first person
 
 `1.5.3`
 - Fixed build mode camera when ModernCamera is disabled

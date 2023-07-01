@@ -22,6 +22,7 @@ internal abstract class CameraBehaviour
 
     internal virtual void Deactivate()
     {
+        TargetZoom = Settings.MaxZoom / 2;
         Active = false;
     }
 

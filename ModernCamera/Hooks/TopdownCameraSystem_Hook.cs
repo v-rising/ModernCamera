@@ -1,5 +1,4 @@
 ﻿using BepInEx.Unity.IL2CPP.Hook;
-using MonoMod.RuntimeDetour;
 using ProjectM;
 using Silkworm.Utils;
 using System;
@@ -49,7 +48,7 @@ internal static class TopdownCameraSystem_Hook
     {
         if (Settings.Enabled)
         {
-            ModernCameraState.CurrentCameraBehaviour!.HandleInput(ref inputState);
+            ModernCameraState.CurrentCameraBehaviour?.HandleInput(ref inputState);
         }
 
         HandleInputOriginal!(_this, ref inputState);
@@ -77,7 +76,7 @@ internal static class TopdownCameraSystem_Hook
             {
                 if (behaviour.ShouldActivate(ref cameraState))
                 {
-                    ModernCameraState.CurrentCameraBehaviour!.Deactivate();
+                    ModernCameraState.CurrentCameraBehaviour?.Deactivate();
                     behaviour.Activate(ref cameraState);
                     break;
                 }

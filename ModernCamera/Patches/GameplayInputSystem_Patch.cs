@@ -10,6 +10,7 @@ internal static class GameplayInputSystem_Patch
     [HarmonyPatch(typeof(GameplayInputSystem), nameof(GameplayInputSystem.HandleInput))]
     private static unsafe void HandleInputPrefix(ref InputState inputState)
     {
+        ModernCameraState.ValidGameplayInputState = true;
         ModernCameraState.GameplayInputState = inputState;
 
         if (!Settings.Enabled) return;

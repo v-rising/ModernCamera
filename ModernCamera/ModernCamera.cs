@@ -18,6 +18,7 @@ public class ModernCamera : MonoBehaviour
     private static GameObject Crosshair;
     private static CanvasScaler CanvasScaler;
 
+    private static bool ShouldGatherSystems = true;
     private static ZoomModifierSystem ZoomModifierSystem;
     private static PrefabCollectionSystem PrefabCollectionSystem;
     private static UIDataSystem UIDataSystem;
@@ -67,7 +68,6 @@ public class ModernCamera : MonoBehaviour
     {
         ModernCameraState.RegisterCameraBehaviour(new FirstPersonCameraBehaviour());
         ModernCameraState.RegisterCameraBehaviour(new ThirdPersonCameraBehaviour());
-        ModernCameraState.CurrentBehaviourType = BehaviourType.ThirdPerson;
 
         Settings.AddEnabledListener(UpdateEnabled);
         Settings.AddFieldOfViewListener(UpdateFieldOfView);
@@ -93,12 +93,15 @@ public class ModernCamera : MonoBehaviour
                 }
             }
 
-            GatherSystems();
+            if (ShouldGatherSystems)
+                GatherSystems();
+
             UpdateSystems();
             UpdateCrosshair();
         }
         else
         {
+            ShouldGatherSystems = true;
             Cursor.visible = true;
         }
     }
@@ -139,23 +142,15 @@ public class ModernCamera : MonoBehaviour
 
     private void GatherSystems()
     {
-        if (ZoomModifierSystem == null)
-        {
-            ZoomModifierSystem = WorldUtils.ClientWorld.GetExistingSystem<ZoomModifierSystem>();
+        ZoomModifierSystem = WorldUtils.ClientWorld.GetExistingSystem<ZoomModifierSystem>();
+        if (ZoomModifierSystem != null)
+            ZoomModifierSystem.Enabled = false;
 
-            if (ZoomModifierSystem != null)
-                ZoomModifierSystem.Enabled = false;
-        }
+        PrefabCollectionSystem = WorldUtils.ClientWorld.GetExistingSystem<PrefabCollectionSystem>();
 
-        if (PrefabCollectionSystem == null)
-        {
-            PrefabCollectionSystem = WorldUtils.ClientWorld.GetExistingSystem<PrefabCollectionSystem>();
-        }
+        UIDataSystem = WorldUtils.ClientWorld.GetExistingSystem<UIDataSystem>();
 
-        if (UIDataSystem == null)
-        {
-            UIDataSystem = WorldUtils.ClientWorld.GetExistingSystem<UIDataSystem>();
-        }
+        ShouldGatherSystems = false;
     }
 
     private void UpdateSystems()
@@ -172,15 +167,14 @@ public class ModernCamera : MonoBehaviour
                 {
                     if (PrefabCollectionSystem.PrefabGuidToNameDictionary.ContainsKey(buff.PrefabGUID))
                     {
-                        ModernCameraState.IsShapeshifted = PrefabCollectionSystem.PrefabGuidToNameDictionary[buff.PrefabGUID].Contains("shapeshift", System.StringComparison.OrdinalIgnoreCase);
+                        var buffName = PrefabCollectionSystem.PrefabGuidToNameDictionary[buff.PrefabGUID];
+                        if (buffName == null) continue;
+
+                        ModernCameraState.IsShapeshifted = buffName.Contains("shapeshift", StringComparison.OrdinalIgnoreCase);
                         if (ModernCameraState.IsShapeshifted)
                         {
-                            var shapeshiftName = PrefabCollectionSystem.PrefabGuidToNameDictionary[buff.PrefabGUID];
-                            if (shapeshiftName != null)
-                            {
-                                ModernCameraState.ShapeshiftName = shapeshiftName.Trim();
-                                break;
-                            }
+                            ModernCameraState.ShapeshiftName = buffName.Trim();
+                            break;
                         }
                     }
                 }
@@ -193,7 +187,10 @@ public class ModernCamera : MonoBehaviour
                 {
                     if (PrefabCollectionSystem.PrefabGuidToNameDictionary.ContainsKey(ability.AbilityId))
                     {
-                        ModernCameraState.IsMounted = PrefabCollectionSystem.PrefabGuidToNameDictionary[ability.AbilityId].Contains("mounted", System.StringComparison.OrdinalIgnoreCase);
+                        var abilityName = PrefabCollectionSystem.PrefabGuidToNameDictionary[ability.AbilityId];
+                        if (abilityName == null) continue;
+
+                        ModernCameraState.IsMounted = abilityName.Contains("mounted", StringComparison.OrdinalIgnoreCase);
                         if (ModernCameraState.IsMounted)
                             break;
                     }
@@ -210,21 +207,21 @@ public class ModernCamera : MonoBehaviour
     {
         try
         {
+            var cursorVisible = true;
+            var crosshairVisible = false;
+
             if (Crosshair == null && CrosshairPrefab != null)
             {
                 var uiCanvas = GameObject.Find("HUDCanvas(Clone)/Canvas");
-                if (uiCanvas != null)
-                {
-                    CanvasScaler = uiCanvas.GetComponent<CanvasScaler>();
-                    Crosshair = Instantiate(CrosshairPrefab, uiCanvas.transform);
-                    Crosshair.active = true;
-                }
+                if (uiCanvas == null) return;
+
+                CanvasScaler = uiCanvas.GetComponent<CanvasScaler>();
+                Crosshair = Instantiate(CrosshairPrefab, uiCanvas.transform);
+                Crosshair.active = true;
             }
 
-            var cursorVisible = true;
-            var crosshairVisible = false;
             // Locks the mouse to center of screen if mouse should be locked or camera rotate button is pressed
-            if ((ModernCameraState.IsMouseLocked || ModernCameraState.GameplayInputState.IsInputPressed(InputFlag.RotateCamera)) && !ModernCameraState.IsMenuOpen)
+            if (ModernCameraState.ValidGameplayInputState && (ModernCameraState.IsMouseLocked || ModernCameraState.GameplayInputState.IsInputPressed(InputFlag.RotateCamera)) && !ModernCameraState.IsMenuOpen)
             {
                 if (ModernCameraState.IsActionMode || ModernCameraState.IsFirstPerson || Settings.CameraAimMode == CameraAimMode.Forward)
                 {

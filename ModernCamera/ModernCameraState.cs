@@ -16,9 +16,11 @@ internal static class ModernCameraState
     internal static bool IsMounted;
     internal static bool InBuildMode;
     internal static string ShapeshiftName;
-    internal static InputState GameplayInputState;
     internal static BehaviourType CurrentBehaviourType = BehaviourType.Default;
     internal static Dictionary<BehaviourType, CameraBehaviour> CameraBehaviours = new();
+
+    internal static bool ValidGameplayInputState;
+    internal static InputState GameplayInputState;
 
     internal static bool IsMenuOpen
     {
@@ -44,6 +46,7 @@ internal static class ModernCameraState
 
     internal static void Reset()
     {
+        IsUIHidden = false;
         IsFirstPerson = false;
         IsActionMode = false;
         IsMouseLocked = false;
@@ -51,5 +54,9 @@ internal static class ModernCameraState
         IsMounted = false;
         InBuildMode = false;
         ShapeshiftName = "";
+        ValidGameplayInputState = false;
+
+        CurrentCameraBehaviour?.Deactivate();
+        CurrentBehaviourType = BehaviourType.Default;
     }
 }
