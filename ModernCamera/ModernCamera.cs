@@ -62,6 +62,7 @@ public class ModernCamera : MonoBehaviour
     private static void ToggleUI()
     {
         ModernCameraState.IsUIHidden = !ModernCameraState.IsUIHidden;
+        DisableUISettings.SetHideHUD(ModernCameraState.IsUIHidden, WorldUtils.ClientWorld);
     }
 
     private void Awake()

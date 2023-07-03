@@ -85,12 +85,15 @@ I am not officially supporting this as a library for use in other mods, but I wa
 
 
 ### Changelog
+`1.5.6`
+- Fixed hiding UI causing low frame rate by using a different method of hiding UI
+
+<details>
+
 `1.5.5`
 - Fixed first person offset bug after leaving and joining game
 - Fixed errors with first person camera zoom after leaving and joining game
 - Fixed crash from cursor input check after leaving and joining game
-
-<details>
 
 `1.5.4`
 - Update how UI is hidden due to Stunlock update
