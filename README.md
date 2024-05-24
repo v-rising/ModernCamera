@@ -9,6 +9,8 @@ Makes the camera more like an action MMO camera. This includes better control ov
 </ul>
 </details>
 
+YOU NEED FOR 2.0 this [https://thunderstore.io/c/v-rising/p/vrising/ModernCamera/wiki/2057-latest-bepin-ex-version-needed/ ](https://github.com/decaprime/VRising-Modding/releases/tag/1.691.3)
+
 
 ### Features
 - Option and keybinding to enable/disable ModernCamera
