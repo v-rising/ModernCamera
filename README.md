@@ -67,9 +67,12 @@ All configuration is done with the in game options menu
 
 
 ### Support
-Join the [modding discord](https://vrisingmods.com/discord) for support and tag `@iZastic#0365`
+Join the [modding discord](https://vrisingmods.com/discord) for support and tag `@Dimentox`
 
 Submit a ticket on [GitHub](https://github.com/v-rising/ModernCamera/issues)
+
+### Giving back
+If you like the mod and want to give back, consider buying me a coffee [https://buymeacoffee.com/dimentox](https://buymeacoffee.com/dimentox)
 
 
 ### Contributors
@@ -85,6 +88,10 @@ I am not officially supporting this as a library for use in other mods, but I wa
 
 
 ### Changelog
+`2.0.0` 
+- Updated for the new dlc / v1.0
+
+- 
 `1.5.6`
 - Fixed hiding UI causing low frame rate by using a different method of hiding UI
 
