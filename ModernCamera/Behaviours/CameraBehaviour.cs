@@ -30,25 +30,26 @@ internal abstract class CameraBehaviour
 
     internal virtual unsafe void HandleInput(ref InputState inputState)
     {
-        if (inputState.InputsPressed.IsCreated && ModernCameraState.IsMouseLocked && !ModernCameraState.IsMenuOpen && !inputState.IsInputPressed(InputFlag.RotateCamera))
+        if (inputState.InputsPressed.IsCreated && ModernCameraState.IsMouseLocked && !ModernCameraState.IsMenuOpen && !inputState.IsInputPressed(ButtonInputAction.RotateCamera))
         {
-            inputState.InputsPressed.m_ListData->Add(InputFlag.RotateCamera);
+            var a = ButtonInputAction.RotateCamera;
+            inputState.InputsPressed.m_ListData->Add(ref a);
         }
 
         // Manually manage camera zoom
-        var zoomVal = inputState.GetAnalogValue(AnalogInput.ZoomCamera);
+        var zoomVal = inputState.GetAnalogValue(AnalogInputAction.ZoomCamera);
         if (zoomVal != 0 && (!ModernCameraState.InBuildMode || !Settings.DefaultBuildMode))
         {
             // Consume zoom input for the camera
             var zoomAmount = Mathf.Lerp(.25f, 1.5f, Mathf.Max(0, TargetZoom - Settings.MinZoom) / Settings.MaxZoom);
-            var zoomChange = inputState.GetAnalogValue(AnalogInput.ZoomCamera) > 0 ? zoomAmount : -zoomAmount;
+            var zoomChange = inputState.GetAnalogValue(AnalogInputAction.ZoomCamera) > 0 ? zoomAmount : -zoomAmount;
 
             if ((TargetZoom > Settings.MinZoom && TargetZoom + zoomChange < Settings.MinZoom) || (ModernCameraState.IsFirstPerson && zoomChange > 0))
                 TargetZoom = Settings.MinZoom;
             else
                 TargetZoom = Mathf.Clamp(TargetZoom + zoomChange, Settings.FirstPersonEnabled ? 0 : Settings.MinZoom, Settings.MaxZoom);
 
-            inputState.SetAnalogValue(AnalogInput.ZoomCamera, 0);
+            inputState.SetAnalogValue(AnalogInputAction.ZoomCamera, 0);
         }
 
         // Update zoom if MaxZoom is changed

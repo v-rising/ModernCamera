@@ -13,7 +13,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="VRising.Unhollowed.Client" Version="0.6.5.57575090" />
+	  <PackageReference Include="VRising.Unhollowed.Client" Version="1.0.2.794360001" />
     <PackageReference Include="BepInEx.Unity.IL2CPP" Version="6.0.0-be.*" IncludeAssets="compile" />
     <ProjectReference Include="..\..\Silkworm\Silkworm\Silkworm.csproj" />
   </ItemGroup>

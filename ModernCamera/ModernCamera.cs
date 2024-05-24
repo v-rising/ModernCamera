@@ -72,7 +72,7 @@ public class ModernCamera : MonoBehaviour
 
         Settings.AddEnabledListener(UpdateEnabled);
         Settings.AddFieldOfViewListener(UpdateFieldOfView);
-        Settings.AddHideUIListener(ToggleUI);
+       // Settings.AddHideUIListener(ToggleUI);
     }
 
     private void Update()
@@ -143,13 +143,13 @@ public class ModernCamera : MonoBehaviour
 
     private void GatherSystems()
     {
-        ZoomModifierSystem = WorldUtils.ClientWorld.GetExistingSystem<ZoomModifierSystem>();
+        ZoomModifierSystem = WorldUtils.ClientWorld.GetExistingSystemManaged<ZoomModifierSystem>();
         if (ZoomModifierSystem != null)
             ZoomModifierSystem.Enabled = false;
 
-        PrefabCollectionSystem = WorldUtils.ClientWorld.GetExistingSystem<PrefabCollectionSystem>();
+        PrefabCollectionSystem = WorldUtils.ClientWorld.GetExistingSystemManaged<PrefabCollectionSystem>();
 
-        UIDataSystem = WorldUtils.ClientWorld.GetExistingSystem<UIDataSystem>();
+        UIDataSystem = WorldUtils.ClientWorld.GetExistingSystemManaged<UIDataSystem>();
 
         ShouldGatherSystems = false;
     }
@@ -222,7 +222,7 @@ public class ModernCamera : MonoBehaviour
             }
 
             // Locks the mouse to center of screen if mouse should be locked or camera rotate button is pressed
-            if (ModernCameraState.ValidGameplayInputState && (ModernCameraState.IsMouseLocked || ModernCameraState.GameplayInputState.IsInputPressed(InputFlag.RotateCamera)) && !ModernCameraState.IsMenuOpen)
+            if (ModernCameraState.ValidGameplayInputState && (ModernCameraState.IsMouseLocked || ModernCameraState.GameplayInputState.IsInputPressed(ButtonInputAction.RotateCamera)) && !ModernCameraState.IsMenuOpen)
             {
                 if (ModernCameraState.IsActionMode || ModernCameraState.IsFirstPerson || Settings.CameraAimMode == CameraAimMode.Forward)
                 {
